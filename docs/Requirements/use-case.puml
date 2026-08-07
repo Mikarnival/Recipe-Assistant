@@ -1,0 +1,74 @@
+@startuml "use-case"
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor User
+
+rectangle "Recipe Assistant\n有手就行" {
+
+    package "Recipe Library" {
+        usecase "Browse Recipes" as UC_Browse
+        usecase "Search Recipes" as UC_Search
+        usecase "Filter Recipes" as UC_Filter
+        usecase "View Recipe Details" as UC_View
+        usecase "Manage Favorites" as UC_Favorite
+    }
+
+    package "Recipe Import" {
+        usecase "Import Recipe" as UC_Import
+        usecase "Enter Recipe Source" as UC_Source
+        usecase "Extract Recipe Information" as UC_Extract
+        usecase "Review Imported Recipe" as UC_Review
+        usecase "Save Imported Recipe" as UC_Save
+    }
+
+    package "Cooking" {
+        usecase "Start Cooking Mode" as UC_Cooking
+        usecase "View Cooking Steps" as UC_Steps
+        usecase "Navigate Between Steps" as UC_Navigate
+        usecase "View Ingredient Quantities" as UC_Quantity
+        usecase "Adjust Serving Size" as UC_Serving
+        usecase "Complete Cooking Session" as UC_Complete
+    }
+
+    package "Personalization" {
+        usecase "Manage Preferences" as UC_Preferences
+        usecase "Set Taste Preferences" as UC_Taste
+        usecase "Configure Measurement Tools" as UC_Tools
+    }
+}
+
+User --> UC_Browse
+User --> UC_Search
+User --> UC_Filter
+User --> UC_View
+User --> UC_Favorite
+User --> UC_Complete
+
+User --> UC_Import
+User --> UC_Save
+
+UC_Import ..> UC_Source : <<include>>
+UC_Import ..> UC_Extract : <<include>>
+UC_Import ..> UC_Review : <<include>>
+
+UC_Save ..> UC_Review : <<extend>>
+
+User --> UC_Cooking
+User --> UC_Serving
+
+UC_Cooking ..> UC_Steps : <<include>>
+UC_Cooking ..> UC_Navigate : <<include>>
+UC_Cooking ..> UC_Quantity : <<include>>
+
+UC_Serving ..> UC_Quantity : <<extend>>
+UC_Complete ..> UC_Cooking : <<extend>>
+
+User --> UC_Preferences
+
+UC_Preferences ..> UC_Taste : <<include>>
+UC_Preferences ..> UC_Tools : <<include>>
+
+@enduml
