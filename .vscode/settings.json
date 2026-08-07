@@ -1,0 +1,5 @@
+{
+    "plantuml.render": "Local",
+    "plantuml.exportOutDir": ".",
+    "plantuml.exportSubFolder": false
+}

@@ -1,74 +1,75 @@
-@startuml "use-case"
+@startuml use-case
 
 left to right direction
 skinparam packageStyle rectangle
 skinparam shadowing false
+skinparam actorStyle awesome
 
-actor User
+actor "Home Cook" as User
 
-rectangle "Recipe Assistant\n有手就行" {
+rectangle "Recipe Assistant" {
 
-    package "Recipe Library" {
-        usecase "Browse Recipes" as UC_Browse
-        usecase "Search Recipes" as UC_Search
-        usecase "Filter Recipes" as UC_Filter
-        usecase "View Recipe Details" as UC_View
-        usecase "Manage Favorites" as UC_Favorite
+    package "EP-01 Recipe Library" {
+        usecase "Browse Recipes" as UC_LIB_01
+        usecase "Search Recipes" as UC_LIB_02
+        usecase "View Recipe Details" as UC_LIB_03
+        usecase "Manage Favorites" as UC_LIB_04
+        usecase "Filter Recipes by Category" as UC_LIB_05
+        usecase "Sort Recipes" as UC_LIB_06
     }
 
-    package "Recipe Import" {
-        usecase "Import Recipe" as UC_Import
-        usecase "Enter Recipe Source" as UC_Source
-        usecase "Extract Recipe Information" as UC_Extract
-        usecase "Review Imported Recipe" as UC_Review
-        usecase "Save Imported Recipe" as UC_Save
+    package "EP-02 Recipe Import" {
+        usecase "Create Recipe Manually" as UC_IMP_01
+        usecase "Edit Recipe" as UC_IMP_02
+        usecase "Delete Recipe" as UC_IMP_03
     }
 
-    package "Cooking" {
-        usecase "Start Cooking Mode" as UC_Cooking
-        usecase "View Cooking Steps" as UC_Steps
-        usecase "Navigate Between Steps" as UC_Navigate
-        usecase "View Ingredient Quantities" as UC_Quantity
-        usecase "Adjust Serving Size" as UC_Serving
-        usecase "Complete Cooking Session" as UC_Complete
+    package "EP-03 Cooking Experience" {
+        usecase "Start Cooking Mode" as UC_COOK_01
+        usecase "View One Cooking Step\nat a Time" as UC_COOK_02
+        usecase "Navigate Between\nCooking Steps" as UC_COOK_03
+        usecase "View Ingredient Quantities" as UC_COOK_04
+        usecase "Mark Cooking Steps\nas Completed" as UC_COOK_05
+        usecase "View Preparation Tasks" as UC_COOK_06
     }
 
-    package "Personalization" {
-        usecase "Manage Preferences" as UC_Preferences
-        usecase "Set Taste Preferences" as UC_Taste
-        usecase "Configure Measurement Tools" as UC_Tools
+    package "EP-04 Personalization" {
+        usecase "Manage Spoon Profiles" as UC_PER_01
+        usecase "Set Taste Preference" as UC_PER_02
+        usecase "Choose Measurement Unit" as UC_PER_03
+        usecase "Set Default Serving Size" as UC_PER_04
+        usecase "Save Personal Preferences" as UC_PER_05
     }
 }
 
-User --> UC_Browse
-User --> UC_Search
-User --> UC_Filter
-User --> UC_View
-User --> UC_Favorite
-User --> UC_Complete
+User --> UC_LIB_01
+User --> UC_LIB_02
+User --> UC_LIB_03
+User --> UC_LIB_04
+User --> UC_LIB_05
+User --> UC_LIB_06
 
-User --> UC_Import
-User --> UC_Save
+User --> UC_IMP_01
+User --> UC_IMP_02
+User --> UC_IMP_03
 
-UC_Import ..> UC_Source : <<include>>
-UC_Import ..> UC_Extract : <<include>>
-UC_Import ..> UC_Review : <<include>>
+User --> UC_COOK_01
+User --> UC_COOK_06
 
-UC_Save ..> UC_Review : <<extend>>
+UC_COOK_01 ..> UC_COOK_02 : <<include>>
+UC_COOK_01 ..> UC_COOK_03 : <<include>>
+UC_COOK_01 ..> UC_COOK_04 : <<include>>
 
-User --> UC_Cooking
-User --> UC_Serving
+UC_COOK_05 ..> UC_COOK_02 : <<extend>>
 
-UC_Cooking ..> UC_Steps : <<include>>
-UC_Cooking ..> UC_Navigate : <<include>>
-UC_Cooking ..> UC_Quantity : <<include>>
+User --> UC_PER_01
+User --> UC_PER_02
+User --> UC_PER_03
+User --> UC_PER_04
 
-UC_Serving ..> UC_Quantity : <<extend>>
-UC_Complete ..> UC_Cooking : <<extend>>
-
-User --> UC_Preferences
-
-UC_Preferences ..> UC_Taste : <<include>>
-UC_Preferences ..> UC_Tools : <<include>>
+UC_PER_01 ..> UC_PER_05 : <<include>>
+UC_PER_02 ..> UC_PER_05 : <<include>>
+UC_PER_03 ..> UC_PER_05 : <<include>>
+UC_PER_04 ..> UC_PER_05 : <<include>>
 
 @enduml
