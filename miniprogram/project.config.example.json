@@ -1,0 +1,9 @@
+{
+  "setting": {
+    "es6": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "appid": "YOUR_WECHAT_APP_ID"
+}

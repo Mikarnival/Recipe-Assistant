@@ -23,3 +23,7 @@ Thumbs.db
 
 # Node.js
 node_modules/
+
+# Wechat Mini Program
+miniprogram/project.config.json
+miniprogram/project.private.config.json
