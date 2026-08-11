@@ -18,6 +18,8 @@
       class="recipe-card"
       wx:for="{{recipes}}"
       wx:key="id"
+      bindtap="onRecipeTap"
+      data-recipe-id="{{item.id}}"
     >
       <view class="recipe-title">
         {{item.title}}
@@ -29,3 +31,4 @@
     </view>
   </view>
 </view>
+
