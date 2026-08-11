@@ -9,7 +9,7 @@ Page({
   data: {
     recipes: [] as RecipeSummary[],
     loading: false,
-    error: ""
+    error: "",
   },
 
   onLoad() {
@@ -42,6 +42,23 @@ Page({
         this.setData({
           loading: false
         })
+      }
+    })
+  },
+
+  onRecipeTap(event) {
+    const recipeId = event.currentTarget.dataset.recipeId
+    console.log(recipeId)
+
+    wx.navigateTo({
+      url:`/pages/recipe-detail/recipe-detail?id=${recipeId}`,
+
+      success: () => {
+        console.log("navigate success")
+      },
+  
+      fail: (error) => {
+        console.log("navigate failed:", error)
       }
     })
   }

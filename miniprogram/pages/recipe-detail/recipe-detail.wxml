@@ -1,0 +1,91 @@
+<view class="page">
+
+<!-- Loading state -->
+<view class="status-message" 
+  wx:if="{{loading}}"
+>
+  Loading...
+</view>
+
+<!-- Error state -->
+<view class="status-message error-message"
+  wx:elif="{{error}}"
+>
+  {{error}}
+</view>
+
+<!-- Recipe detail -->
+<view wx:elif="{{recipe}}">
+
+  <!-- Header -->
+  <view class="recipe-title">
+    {{recipe.title}}
+  </view>
+
+  <view class="recipe-meta">
+    {{recipe.category}}
+  </view>
+
+  <view class="recipe-meta">
+    Servings: {{recipe.servings}}
+  </view>
+
+  <!-- Ingredients -->
+  <view class="section">
+    <view class="section-title">
+      Ingredients
+    </view>
+
+    <view
+      class="ingredient-item"
+      wx:for="{{recipe.ingredients}}"
+      wx:key="name"
+    >
+      <view class="ingredient-name">
+        {{item.name}}
+      </view>
+
+      <view class="ingredient-amount">
+        {{item.quantity}} {{item.unit}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Preparation -->
+  <view class="section">
+    <view class="section-title">
+      Preparation
+    </view>
+
+    <view
+      class="preparation-item"
+      wx:for="{{recipe.preparation_tasks}}"
+      wx:key="*this"
+    >
+      {{item}}
+    </view>
+  </view>
+
+  <!-- Steps -->
+  <view class="section">
+    <view class="section-title">
+      Steps
+    </view>
+
+    <view
+      class="step-item"
+      wx:for="{{recipe.steps}}"
+      wx:key="index"
+    >
+      <view class="step-number">
+        {{index + 1}}
+      </view>
+
+      <view class="step.instruction">
+        {{item.instruction}}
+      </view>
+    </view>
+  </view>
+</view>
+
+</view>
