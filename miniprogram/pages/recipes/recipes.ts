@@ -1,3 +1,5 @@
+let searchTimer: number | undefined
+
 interface RecipeSummary {
   id: string
   title: string
@@ -8,12 +10,33 @@ interface RecipeSummary {
 Page({
   data: {
     recipes: [] as RecipeSummary[],
+    searchTerm:"",
     loading: false,
     error: "",
   },
 
+  onSearchInput(event) {
+    this.setData({
+      searchTerm: event.detail.value
+    })
+
+    if (searchTimer !== undefined) {
+      clearTimeout(searchTimer)
+    }
+
+    searchTimer = setTimeout(() => {
+      this.loadRecipes()
+    }, 300)
+  },
+
   onLoad() {
     this.loadRecipes()
+  },
+
+  onUnload(){
+    if (searchTimer !== undefined){
+      clearTimeout(searchTimer)
+    }
   },
 
   loadRecipes() {
@@ -25,6 +48,9 @@ Page({
     wx.request({
       url: "http://127.0.0.1:8000/api/recipes",
       method: "GET",
+      data:{
+        q: this.data.searchTerm
+      },
 
       success: (response) => {
         this.setData({

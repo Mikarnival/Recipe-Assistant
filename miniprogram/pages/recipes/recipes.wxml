@@ -1,6 +1,16 @@
 <view class="page">
   <view class="page-title">My Recipes</view>
 
+  <view class="search-bar">
+    <text class="search-icon">🔍</text>
+    <input
+      class="search-input"
+      placeholder="Search recipes"
+      value="{{searchTerm}}"
+      bindinput="onSearchInput"
+    />
+  </view>
+
   <view wx:if="{{loading}}" class="status-message">
     Loading...
   </view>
@@ -9,7 +19,14 @@
     {{error}}
   </view>
 
-  <view wx:elif="{{recipes.length === 0}}" class="status-message">
+  <view wx:elif="{{recipes.length === 0 && searchTerm}}" class="status-message">
+    No recipes yet.
+  </view>
+
+  <view
+    wx:elif="{{recipes.length === 0}}"
+  c lass="status-message"
+  >
     No recipes yet.
   </view>
 
