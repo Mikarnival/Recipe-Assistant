@@ -83,3 +83,76 @@ def test_get_recipe_by_id_returns_404_for_unknown_recipe() -> None:
     assert response.json() == {
         "detail": "Recipe not found"
     }
+
+
+def test_search_recipes_by_full_title() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": "Beef Noodle Soup"},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-002"
+    assert data[0]["title"] == "Beef Noodle Soup"
+
+
+def test_search_recipes_by_partial_title() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": "Noodle"},
+    )
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-002"
+
+
+def test_search_recipes_is_case_insensitive() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": "beef noodle soup"},
+    )
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-002"
+
+
+def test_search_recipes_returns_empty_list_for_no_match() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": "Pizza"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_search_recipes_with_empty_query_returns_all_recipes() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": ""},
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 2
+
+
+def test_search_recipes_with_whitespace_query_returns_all_recipes() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"q": "   "},
+    )
+
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 2
