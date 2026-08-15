@@ -11,8 +11,19 @@ app = FastAPI(
     "/api/recipes",
     response_model=list[RecipeSummary],
 )
-def get_recipes() -> list[dict]:
-    return RECIPES
+def get_recipes(
+    q: str | None = None,
+) -> list[dict]:
+    if q is None or not q.strip():
+        return RECIPES
+
+    search_term = q.strip().lower()
+
+    return [
+        recipe
+        for recipe in RECIPES
+        if search_term in recipe["title"].lower()
+    ]
 
 
 @app.get(
