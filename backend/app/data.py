@@ -4,6 +4,7 @@ RECIPES = [
         "title": "Tomato and Egg Stir-Fry",
         "category": "Chinese",
         "servings": 2,
+        "is_favorite": False,
         "ingredients": [
             {
                 "name": "Egg",
@@ -51,8 +52,9 @@ RECIPES = [
     {
         "id": "recipe-002",
         "title": "Beef Noodle Soup",
-        "category": "Chinese",
+        "category": "Noodles",
         "servings": 2,
+        "is_favorite": False,
         "ingredients": [
             {
                 "name": "Beef",

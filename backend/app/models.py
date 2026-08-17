@@ -6,8 +6,13 @@ class RecipeSummary(BaseModel):
     title: str
     category: str
     servings: int
+    is_favorite: bool
 
 
+class FavoriteUpdate(BaseModel):
+    is_favorite: bool
+
+  
 class Ingredient(BaseModel):
     name: str
     quantity: float
@@ -23,6 +28,7 @@ class RecipeDetail(BaseModel):
     title: str
     category: str
     servings: int
+    is_favorite: bool
     ingredients: list[Ingredient]
     preparation_tasks: list[str]
     steps: list[CookingStep]
