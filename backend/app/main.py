@@ -23,11 +23,12 @@ def get_recipes(
         "title_desc",
     }
 
-    if sort is not None and sort not in valid_sort_values:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported sort value",
-        )
+    if sort is not None and sort.strip():
+        if sort not in valid_sort_values:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Unsupported sort value",
+            )
 
     recipes = list(RECIPES)
 
@@ -78,7 +79,7 @@ def get_recipe(recipe_id: str) -> dict:
     )
 
 
-@app.patch(
+@app.put(
     "/api/recipes/{recipe_id}/favorite",
     response_model=RecipeSummary,
 )

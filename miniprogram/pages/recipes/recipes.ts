@@ -5,14 +5,17 @@ interface RecipeSummary {
   title: string
   category: string
   servings: number
+  is_favorite: boolean
 }
 
 Page({
   data: {
     recipes: [] as RecipeSummary[],
-    searchTerm:"",
     loading: false,
     error: "",
+    searchTerm: "",
+    selectedCategory: "",
+    sortOption: "",
   },
 
   onSearchInput(event) {
@@ -33,8 +36,8 @@ Page({
     this.loadRecipes()
   },
 
-  onUnload(){
-    if (searchTimer !== undefined){
+  onUnload() {
+    if (searchTimer !== undefined) {
       clearTimeout(searchTimer)
     }
   },
@@ -48,13 +51,24 @@ Page({
     wx.request({
       url: "http://127.0.0.1:8000/api/recipes",
       method: "GET",
-      data:{
-        q: this.data.searchTerm
+      data: {
+        q: this.data.searchTerm,
+        category: this.data.selectedCategory,
+        sort: this.data.sortOption,
       },
 
       success: (response) => {
+        if (response.statusCode === 200) {
+          this.setData({
+            recipes: response.data as RecipeSummary[],
+            error: ""
+          })
+          return
+        }
+
         this.setData({
-          recipes: response.data as RecipeSummary[]
+          recipes: [],
+          error: "Failed to load recipes"
         })
       },
 
@@ -77,15 +91,68 @@ Page({
     console.log(recipeId)
 
     wx.navigateTo({
-      url:`/pages/recipe-detail/recipe-detail?id=${recipeId}`,
+      url: `/pages/recipe-detail/recipe-detail?id=${recipeId}`,
 
       success: () => {
         console.log("navigate success")
       },
-  
+
       fail: (error) => {
         console.log("navigate failed:", error)
       }
     })
-  }
+  },
+
+  onCategoryChange(event) {
+    const category = event.currentTarget.dataset.category
+
+    this.setData({
+      selectedCategory: category
+    })
+
+    this.loadRecipes()
+  },
+
+  onSortChange(event) {
+    const sort = event.currentTarget.dataset.sort
+
+    this.setData({
+      sortOption: sort
+    })
+
+    this.loadRecipes()
+  },
+
+  onFavoriteTap(event) {
+    const recipeId = event.currentTarget.dataset.recipeId
+    const isFavorite = Boolean(
+      event.currentTarget.dataset.isFavorite
+    )
+
+    wx.request({
+      url: `http://127.0.0.1:8000/api/recipes/${recipeId}/favorite`,
+      method: "PUT",
+
+      data: {
+        is_favorite: !isFavorite
+      },
+
+      success: (response) => {
+        if (response.statusCode === 200) {
+          this.loadRecipes()
+          return
+        }
+
+        this.setData({
+          error: "Failed to update favorite"
+        })
+      },
+
+      fail: () => {
+        this.setData({
+          error: "Failed to update favorite"
+        })
+      }
+    })
+  },
 })
