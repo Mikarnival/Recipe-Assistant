@@ -171,7 +171,7 @@ def test_get_recipes_returns_favorite_state() -> None:
 
 
 def test_mark_recipe_as_favorite() -> None:
-    response = client.patch(
+    response = client.put(
         "/api/recipes/recipe-001/favorite",
         json={"is_favorite": True},
     )
@@ -181,12 +181,12 @@ def test_mark_recipe_as_favorite() -> None:
 
 
 def test_remove_recipe_from_favorites() -> None:
-    client.patch(
+    client.put(
         "/api/recipes/recipe-001/favorite",
         json={"is_favorite": True},
     )
 
-    response = client.patch(
+    response = client.put(
         "/api/recipes/recipe-001/favorite",
         json={"is_favorite": False},
     )
@@ -196,7 +196,7 @@ def test_remove_recipe_from_favorites() -> None:
 
 
 def test_update_favorite_returns_404_for_unknown_recipe() -> None:
-    response = client.patch(
+    response = client.put(
         "/api/recipes/unknown-recipe/favorite",
         json={"is_favorite": True},
     )
@@ -321,3 +321,27 @@ def test_sort_recipes_returns_400_for_unsupported_value() -> None:
     }
 
 
+def test_sort_recipes_with_empty_value_returns_all_recipes() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"sort": ""},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2
+
+
+def test_sort_recipes_with_whitespace_value_returns_all_recipes() -> None:
+    response = client.get(
+        "/api/recipes",
+        params={"sort": "   "},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 2

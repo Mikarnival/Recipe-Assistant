@@ -55,3 +55,40 @@
   flex: 1;
   font-size: 28rpx;
 }
+
+.controls {
+  margin-bottom: 32rpx;
+}
+
+.filter-section,
+.sort-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.control-option {
+  padding: 12rpx 20rpx;
+  background-color: #f2f2f2;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: #555555;
+}
+
+.control-option.active {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+.recipe-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.favorite-button {
+  padding: 8rpx;
+  font-size: 40rpx;
+  line-height: 1;
+}

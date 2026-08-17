@@ -11,6 +11,52 @@
     />
   </view>
 
+  <view class="controls">
+    <view class="filter-section">
+      <view
+        class="control-option {{selectedCategory === '' ? 'active' : ''}}"
+        data-category=""
+        bindtap="onCategoryChange"
+      >
+        All
+      </view>
+
+      <view
+        class="control-option {{selectedCategory === 'Chinese' ? 'active' : ''}}"
+        data-category="Chinese"
+        bindtap="onCategoryChange"
+      >
+        Chinese
+      </view>
+
+      <view
+        class="control-option {{selectedCategory === 'Noodles' ? 'active' : ''}}"
+        data-category="Noodles"
+        bindtap="onCategoryChange"
+      >
+        Noodles
+      </view>
+    </view>
+
+  <view class="sort-section">
+    <view
+      class="control-option {{sortOption === 'title_asc' ? 'active' : ''}}"
+      data-sort="title_asc"
+      bindtap="onSortChange"
+    >
+      A–Z
+    </view>
+
+    <view
+      class="control-option {{sortOption === 'title_desc' ? 'active' : ''}}"
+      data-sort="title_desc"
+      bindtap="onSortChange"
+    >
+      Z–A
+    </view>
+  </view>
+</view>
+
   <view wx:if="{{loading}}" class="status-message">
     Loading...
   </view>
@@ -23,6 +69,10 @@
     No recipes yet.
   </view>
 
+  <view wx:elif="{{recipes.length === 0}}" class="status-message">
+    No recipes yet.
+  </view>
+
   <view
     wx:elif="{{recipes.length === 0}}"
   c lass="status-message"
@@ -30,21 +80,30 @@
     No recipes yet.
   </view>
 
-  <view wx:else>
-    <view
-      class="recipe-card"
-      wx:for="{{recipes}}"
-      wx:key="id"
-      bindtap="onRecipeTap"
-      data-recipe-id="{{item.id}}"
-    >
+  <view
+    class="recipe-card"
+    wx:for="{{recipes}}"
+    wx:key="id"
+    bindtap="onRecipeTap"
+    data-recipe-id="{{item.id}}"
+  >
+    <view class="recipe-header">
       <view class="recipe-title">
         {{item.title}}
       </view>
 
-      <view class="recipe-meta">
-        {{item.category}} · {{item.servings}} servings
+      <view
+        class="favorite-button"
+        catchtap="onFavoriteTap"
+        data-recipe-id="{{item.id}}"
+        data-is-favorite="{{item.is_favorite}}"
+      >
+        {{item.is_favorite ? '♥' : '♡'}}
       </view>
+    </view>
+
+    <view class="recipe-meta">
+      {{item.category}} · {{item.servings}} servings
     </view>
   </view>
 </view>
