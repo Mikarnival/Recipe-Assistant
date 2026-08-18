@@ -1,3 +1,5 @@
+const API_BASE_URL = "http://127.0.0.1:8000"
+
 let searchTimer: number | undefined
 
 interface RecipeSummary {
@@ -6,6 +8,13 @@ interface RecipeSummary {
   category: string
   servings: number
   is_favorite: boolean
+}
+
+interface RecipeQuery {
+  q: string
+  category: string
+  sort: string
+  favorite?: boolean
 }
 
 Page({
@@ -49,12 +58,7 @@ Page({
       error: ""
     })
 
-    const requestData: {
-      q: string
-      category: string
-      sort: string
-      favorite?: boolean
-    } = {
+    const requestData: RecipeQuery = {
       q: this.data.searchTerm,
       category: this.data.selectedCategory,
       sort: this.data.sortOption,
@@ -65,7 +69,7 @@ Page({
     }
 
     wx.request({
-      url: "http://127.0.0.1:8000/api/recipes",
+      url: `${API_BASE_URL}/api/recipes`,
       method: "GET",
       data: requestData,
 
@@ -142,7 +146,7 @@ Page({
     )
 
     wx.request({
-      url: `http://127.0.0.1:8000/api/recipes/${recipeId}/favorite`,
+      url: `${API_BASE_URL}/api/recipes/${recipeId}/favorite`,
       method: "PUT",
 
       data: {

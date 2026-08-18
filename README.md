@@ -17,9 +17,9 @@ Current development status:
 | US-001 | Browse recipes | ✅ Completed |
 | US-002 | Search recipes | ✅ Completed |
 | US-003 | View recipe details | ✅ Completed |
-| US-004 | Favorite recipes | 🚧 In Progress |
-| US-005 | Filter recipes by category | 🚧 In Progress |
-| US-006 | Sort recipes | 🚧 In Progress |
+| US-004 | Favorite recipes | ✅ Completed |
+| US-005 | Filter recipes by category | ✅ Completed |
+| US-006 | Sort recipes | ✅ Completed |
 
 The current development batch covers US-004, US-005, and US-006.
 
@@ -434,6 +434,7 @@ python -m pip install -r requirements.txt
 Start the FastAPI backend:
 
 ```bash
+cd backend
 python -m uvicorn app.backend.main:app --reload
 ```
 
@@ -544,9 +545,9 @@ The current focus is completing the Recipe Library.
 - [x] Browse recipes
 - [x] Search recipes
 - [x] View recipe details
-- [ ] Favorite recipes
-- [ ] Filter recipes by category
-- [ ] Sort recipes
+- [x] Favorite recipes
+- [x] Filter recipes by category
+- [x] Sort recipes
 
 ### Recipe Import
 
@@ -573,33 +574,6 @@ The current focus is completing the Recipe Library.
 
 ## Current Development Focus
 
-The current batch implements:
-
-```text
-US-004 Favorite recipes
-US-005 Filter recipes by category
-US-006 Sort recipes
-```
-
-Backend implementation is complete.
-
-Frontend implementation currently includes:
-
-```text
-RecipeSummary.is_favorite
-selectedCategory state
-sortOption state
-q/category/sort API parameters
-category controls
-sort controls
-favorite toggle
-favorite PUT request
-catchtap event handling
-HTTP status validation
-request error handling
-```
-
-The next development step is completing the frontend manual acceptance test and validating US-004, US-005, and US-006 as complete end-to-end User Stories.
 
 ---
 
