@@ -16,6 +16,7 @@ app = FastAPI(
 def get_recipes(
     q: str | None = None,
     category: str | None = None,
+    favorite: bool | None = None,
     sort: str | None = None,
 ) -> list[dict]:
     valid_sort_values = {
@@ -48,6 +49,13 @@ def get_recipes(
             recipe
             for recipe in recipes
             if recipe["category"].lower() == category_term
+        ]
+
+    if favorite is not None:
+        recipes = [
+            recipe
+            for recipe in recipes
+            if recipe["is_favorite"] == favorite
         ]
 
     if sort == "title_asc":

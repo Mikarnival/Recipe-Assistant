@@ -12,6 +12,15 @@
   </view>
 
   <view class="controls">
+    <view class="favorite-filter-section">
+      <view
+        class="control-option {{favoriteOnly ? 'active' : ''}}"
+        bindtap="onFavoriteFilterChange"
+      >
+        ♥ Favorites
+      </view>
+    </view>
+
     <view class="filter-section">
       <view
         class="control-option {{selectedCategory === '' ? 'active' : ''}}"
@@ -38,24 +47,24 @@
       </view>
     </view>
 
-  <view class="sort-section">
-    <view
-      class="control-option {{sortOption === 'title_asc' ? 'active' : ''}}"
-      data-sort="title_asc"
-      bindtap="onSortChange"
-    >
-      A–Z
-    </view>
+    <view class="sort-section">
+      <view
+        class="control-option {{sortOption === 'title_asc' ? 'active' : ''}}"
+        data-sort="title_asc"
+        bindtap="onSortChange"
+      >
+        A–Z
+      </view>
 
-    <view
-      class="control-option {{sortOption === 'title_desc' ? 'active' : ''}}"
-      data-sort="title_desc"
-      bindtap="onSortChange"
-    >
-      Z–A
+      <view
+        class="control-option {{sortOption === 'title_desc' ? 'active' : ''}}"
+        data-sort="title_desc"
+        bindtap="onSortChange"
+      >
+        Z–A
+      </view>
     </view>
   </view>
-</view>
 
   <view wx:if="{{loading}}" class="status-message">
     Loading...
@@ -65,19 +74,8 @@
     {{error}}
   </view>
 
-  <view wx:elif="{{recipes.length === 0 && searchTerm}}" class="status-message">
-    No recipes yet.
-  </view>
-
   <view wx:elif="{{recipes.length === 0}}" class="status-message">
-    No recipes yet.
-  </view>
-
-  <view
-    wx:elif="{{recipes.length === 0}}"
-  c lass="status-message"
-  >
-    No recipes yet.
+    No recipes found.
   </view>
 
   <view
@@ -107,4 +105,3 @@
     </view>
   </view>
 </view>
-
