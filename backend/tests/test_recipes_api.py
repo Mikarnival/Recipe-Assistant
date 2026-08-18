@@ -345,3 +345,102 @@ def test_sort_recipes_with_whitespace_value_returns_all_recipes() -> None:
     data = response.json()
 
     assert len(data) == 2
+
+
+def test_filter_favorite_recipes() -> None:
+    client.put(
+        "/api/recipes/recipe-001/favorite",
+        json={"is_favorite": True},
+    )
+    client.put(
+        "/api/recipes/recipe-002/favorite",
+        json={"is_favorite": False},
+    )
+
+    response = client.get(
+        "/api/recipes",
+        params={"favorite": True},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-001"
+    assert data[0]["is_favorite"] is True
+
+
+def test_filter_non_favorite_recipes() -> None:
+    client.put(
+        "/api/recipes/recipe-001/favorite",
+        json={"is_favorite": True},
+    )
+    client.put(
+        "/api/recipes/recipe-002/favorite",
+        json={"is_favorite": False},
+    )
+
+    response = client.get(
+        "/api/recipes",
+        params={"favorite": False},
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-002"
+    assert data[0]["is_favorite"] is False
+
+
+def test_get_recipes_without_favorite_filter_returns_all_recipes() -> None:
+    response = client.get("/api/recipes")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+
+def test_favorite_filter_returns_empty_list_when_no_match() -> None:
+    client.put(
+        "/api/recipes/recipe-001/favorite",
+        json={"is_favorite": False},
+    )
+    client.put(
+        "/api/recipes/recipe-002/favorite",
+        json={"is_favorite": False},
+    )
+
+    response = client.get(
+        "/api/recipes",
+        params={"favorite": True},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_search_category_favorite_and_sort_recipes() -> None:
+    client.put(
+        "/api/recipes/recipe-002/favorite",
+        json={"is_favorite": True},
+    )
+
+    response = client.get(
+        "/api/recipes",
+        params={
+            "q": "Noodle",
+            "category": "Noodles",
+            "favorite": True,
+            "sort": "title_asc",
+        },
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["id"] == "recipe-002"
+    assert data[0]["is_favorite"] is True

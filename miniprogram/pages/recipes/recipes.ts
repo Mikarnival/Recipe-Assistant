@@ -15,7 +15,18 @@ Page({
     error: "",
     searchTerm: "",
     selectedCategory: "",
+    favoriteOnly: false,
     sortOption: "",
+  },
+
+  onLoad() {
+    this.loadRecipes()
+  },
+
+  onUnload() {
+    if (searchTimer !== undefined) {
+      clearTimeout(searchTimer)
+    }
   },
 
   onSearchInput(event) {
@@ -32,30 +43,31 @@ Page({
     }, 300)
   },
 
-  onLoad() {
-    this.loadRecipes()
-  },
-
-  onUnload() {
-    if (searchTimer !== undefined) {
-      clearTimeout(searchTimer)
-    }
-  },
-
   loadRecipes() {
     this.setData({
       loading: true,
       error: ""
     })
 
+    const requestData: {
+      q: string
+      category: string
+      sort: string
+      favorite?: boolean
+    } = {
+      q: this.data.searchTerm,
+      category: this.data.selectedCategory,
+      sort: this.data.sortOption,
+    }
+
+    if (this.data.favoriteOnly) {
+      requestData.favorite = true
+    }
+
     wx.request({
       url: "http://127.0.0.1:8000/api/recipes",
       method: "GET",
-      data: {
-        q: this.data.searchTerm,
-        category: this.data.selectedCategory,
-        sort: this.data.sortOption,
-      },
+      data: requestData,
 
       success: (response) => {
         if (response.statusCode === 200) {
@@ -74,6 +86,7 @@ Page({
 
       fail: () => {
         this.setData({
+          recipes: [],
           error: "Failed to load recipes"
         })
       },
@@ -88,18 +101,9 @@ Page({
 
   onRecipeTap(event) {
     const recipeId = event.currentTarget.dataset.recipeId
-    console.log(recipeId)
 
     wx.navigateTo({
       url: `/pages/recipe-detail/recipe-detail?id=${recipeId}`,
-
-      success: () => {
-        console.log("navigate success")
-      },
-
-      fail: (error) => {
-        console.log("navigate failed:", error)
-      }
     })
   },
 
@@ -108,6 +112,14 @@ Page({
 
     this.setData({
       selectedCategory: category
+    })
+
+    this.loadRecipes()
+  },
+
+  onFavoriteFilterChange() {
+    this.setData({
+      favoriteOnly: !this.data.favoriteOnly
     })
 
     this.loadRecipes()
