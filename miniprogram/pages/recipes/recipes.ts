@@ -1,3 +1,4 @@
+export {}
 const API_BASE_URL = "http://127.0.0.1:8000"
 
 let searchTimer: number | undefined
@@ -28,7 +29,7 @@ Page({
     sortOption: "",
   },
 
-  onLoad() {
+  onShow() {
     this.loadRecipes()
   },
 
@@ -79,6 +80,7 @@ Page({
             recipes: response.data as RecipeSummary[],
             error: ""
           })
+
           return
         }
 
@@ -100,6 +102,12 @@ Page({
           loading: false
         })
       }
+    })
+  },
+
+  onCreateRecipeTap() {
+    wx.navigateTo({
+      url: "/pages/recipe-create/recipe-create",
     })
   },
 

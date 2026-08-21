@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/recipes/recipes",
-    "pages/recipe-detail/recipe-detail"
+    "pages/recipe-detail/recipe-detail",
+    "pages/recipe-create/recipe-create"
   ]
 }
