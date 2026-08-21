@@ -640,3 +640,171 @@ def test_create_recipe_allows_missing_preparation_tasks() -> None:
 
     assert response.status_code == 201
     assert response.json()["preparation_tasks"] == []
+
+
+def test_update_recipe_returns_200() -> None:
+    payload = valid_recipe_payload()
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+
+
+def test_update_recipe_changes_recipe_data() -> None:
+    payload = valid_recipe_payload()
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    data = response.json()
+
+    assert data["title"] == "Chicken Fried Rice"
+    assert data["category"] == "Chinese"
+    assert data["servings"] == 2
+    assert len(data["ingredients"]) == 2
+    assert len(data["steps"]) == 2
+
+
+def test_update_recipe_preserves_recipe_id() -> None:
+    payload = valid_recipe_payload()
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.json()["id"] == "recipe-001"
+
+
+def test_update_recipe_preserves_favorite_status() -> None:
+    favorite_response = client.put(
+        "/api/recipes/recipe-001/favorite",
+        json={
+            "is_favorite": True
+        },
+    )
+
+    assert favorite_response.status_code == 200
+
+    payload = valid_recipe_payload()
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["is_favorite"] is True
+
+
+def test_updated_recipe_can_be_retrieved() -> None:
+    payload = valid_recipe_payload()
+
+    client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    response = client.get(
+        "/api/recipes/recipe-001"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["title"] == "Chicken Fried Rice"
+
+
+def test_update_unknown_recipe_returns_404() -> None:
+    response = client.put(
+        "/api/recipes/recipe-999",
+        json=valid_recipe_payload(),
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Recipe not found"
+    }
+
+
+def test_update_recipe_rejects_empty_title() -> None:
+    payload = valid_recipe_payload()
+    payload["title"] = ""
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "invalid_servings",
+    [
+        0,
+        -1,
+    ],
+)
+def test_update_recipe_rejects_invalid_servings(
+    invalid_servings: int,
+) -> None:
+    payload = valid_recipe_payload()
+    payload["servings"] = invalid_servings
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "invalid_servings",
+    [
+        0,
+        -1,
+    ],
+)
+def test_update_recipe_rejects_invalid_servings(
+    invalid_servings: int,
+) -> None:
+    payload = valid_recipe_payload()
+    payload["servings"] = invalid_servings
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_update_recipe_rejects_empty_ingredients() -> None:
+    payload = valid_recipe_payload()
+    payload["ingredients"] = []
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_update_recipe_rejects_empty_steps() -> None:
+    payload = valid_recipe_payload()
+    payload["steps"] = []
+
+    response = client.put(
+        "/api/recipes/recipe-001",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+

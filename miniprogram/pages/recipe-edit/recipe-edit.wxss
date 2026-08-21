@@ -1,0 +1,228 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx;
+  padding-bottom: 80rpx;
+  background-color: #f5f5f5;
+}
+
+.page-title {
+  margin-bottom: 32rpx;
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.status-message {
+  padding: 64rpx 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.error-message {
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background-color: #fff1f1;
+  border-radius: 12rpx;
+  color: #c62828;
+  font-size: 26rpx;
+}
+
+.form-section {
+  margin-bottom: 36rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  margin-bottom: 20rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.section-header .section-title {
+  margin-bottom: 0;
+}
+
+.form-field {
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  margin-bottom: 10rpx;
+  font-size: 26rpx;
+  color: #555555;
+}
+
+.text-input,
+.small-input,
+.task-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 20rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  line-height: 80rpx;
+}
+
+.picker-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 20rpx;
+
+  display: flex;
+  align-items: center;
+
+  background-color: #ffffff;
+  border-radius: 12rpx;
+
+  font-size: 28rpx;
+  color: #222222;
+}
+
+.picker-input.placeholder {
+  color: #999999;
+}
+
+.ingredient-card,
+.step-card {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  background-color: #eeeeee;
+  border-radius: 16rpx;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.item-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.ingredient-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.small-input {
+  flex: 1;
+  padding: 0 18rpx;
+}
+
+.unit-picker {
+  flex: 1;
+}
+
+.small-picker-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 80rpx;
+  padding: 0 18rpx;
+
+  display: flex;
+  align-items: center;
+
+  background-color: #ffffff;
+  border-radius: 12rpx;
+
+  font-size: 28rpx;
+  color: #222222;
+}
+
+.small-picker-input.placeholder {
+  color: #999999;
+}
+
+.preparation-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.task-input {
+  flex: 1;
+  padding: 0 18rpx;
+}
+
+.small-remove-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56rpx;
+  height: 56rpx;
+
+  color: #c62828;
+  font-size: 36rpx;
+}
+
+.step-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 120rpx;
+  padding: 20rpx;
+
+  background-color: #ffffff;
+  border-radius: 12rpx;
+
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.add-button {
+  padding: 10rpx 18rpx;
+  background-color: #333333;
+  border-radius: 20rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+}
+
+.remove-button {
+  padding: 8rpx;
+  color: #c62828;
+  font-size: 24rpx;
+}
+
+.helper-text {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #888888;
+}
+
+.action-row {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 48rpx;
+}
+
+.cancel-button,
+.save-button {
+  flex: 1;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+
+.cancel-button {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.save-button {
+  background-color: #333333;
+  color: #ffffff;
+}

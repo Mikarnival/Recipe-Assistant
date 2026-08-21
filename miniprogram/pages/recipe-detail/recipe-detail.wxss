@@ -1,49 +1,38 @@
 .page {
+  min-height: 100vh;
   padding: 32rpx;
+  background-color: #f5f5f5;
+}
+
+.recipe-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.recipe-header-info {
+  flex: 1;
 }
 
 .recipe-title {
+  margin-bottom: 16rpx;
   font-size: 40rpx;
   font-weight: bold;
-  margin-bottom: 16rpx;
 }
 
 .recipe-meta {
   font-size: 28rpx;
   line-height: 1.5;
+  color: #666666;
 }
 
-.section-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  margin-top: 32rpx;
-  margin-bottom: 12rpx;
-}
-
-.ingredient-item,
-.preparation-item,
-.step-item {
-  font-size: 28rpx;
-  line-height: 1.6;
-  margin-bottom: 8rpx;
-}
-
-.ingredient-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  font-size: 28rpx;
-  line-height: 1.6;
-  margin-bottom: 8rpx;
-}
-
-.ingredient-name {
-  color: #222;
-}
-
-.ingredient-amount {
-  color: #666;
+.edit-button {
+  padding: 12rpx 22rpx;
+  background-color: #333333;
+  border-radius: 24rpx;
+  color: #ffffff;
+  font-size: 24rpx;
 }
 
 .section {
@@ -54,15 +43,39 @@
 }
 
 .section-title {
+  margin-bottom: 16rpx;
   font-size: 32rpx;
   font-weight: bold;
-  margin-bottom: 16rpx;
 }
 
-.page {
-  min-height: 100vh;
-  padding: 32rpx;
-  background-color: #f5f5f5;
+.ingredient-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8rpx;
+
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.ingredient-name {
+  color: #222222;
+}
+
+.ingredient-amount {
+  color: #666666;
+}
+
+.preparation-item {
+  margin-bottom: 8rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.empty-message {
+  font-size: 26rpx;
+  color: #888888;
 }
 
 .step-item {
@@ -72,21 +85,21 @@
 }
 
 .step-number {
-  width: 35rpx;
-  height: 35rpx;
-  border-radius: 50%;
-
-  background-color: #333333;
-  color: #ffffff;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 24rpx;
-  font-weight: bold;
+  width: 35rpx;
+  height: 35rpx;
 
   flex-shrink: 0;
+
+  border-radius: 50%;
+  background-color: #333333;
+  color: #ffffff;
+
+  font-size: 24rpx;
+  font-weight: bold;
 }
 
 .step-instruction {
