@@ -119,3 +119,23 @@
 .error-message {
   color: #d93025;
 }
+
+.recipe-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.delete-button {
+  padding: 12rpx 22rpx;
+  border: 2rpx solid #c62828;
+  border-radius: 24rpx;
+  color: #c62828;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.delete-button.disabled {
+  opacity: 0.5;
+}

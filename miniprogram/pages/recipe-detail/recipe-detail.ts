@@ -28,6 +28,7 @@ Page({
     recipeId: "",
     recipe: null as RecipeDetail | null,
     loading: false,
+    deleting: false,
     error: ""
   },
 
@@ -106,6 +107,74 @@ Page({
   onEditRecipeTap() {
     wx.navigateTo({
       url: `/pages/recipe-edit/recipe-edit?id=${this.data.recipeId}`,
+    })
+  },
+
+  onDeleteRecipeTap() {
+    if (this.data.deleting) {
+      return
+    }
+
+    wx.showModal({
+      title: "Delete Recipe",
+      content: "Are you sure you want to delete this recipe?",
+      confirmText: "Delete",
+      confirmColor: "#c62828",
+
+      success: (result) => {
+        if (result.confirm) {
+          this.deleteRecipe()
+        }
+      }
+    })
+  },
+
+  deleteRecipe() {
+    this.setData({
+      deleting: true,
+      error: ""
+    })
+
+    wx.request({
+      url: `${API_BASE_URL}/api/recipes/${this.data.recipeId}`,
+      method: "DELETE",
+
+      success: (response) => {
+        if (response.statusCode === 204) {
+          wx.showToast({
+            title: "Recipe deleted",
+            icon: "success",
+          })
+
+          wx.navigateBack()
+
+          return
+        }
+
+        if (response.statusCode === 404) {
+          this.setData({
+            error: "Recipe not found"
+          })
+
+          return
+        }
+
+        this.setData({
+          error: "Failed to delete recipe"
+        })
+      },
+
+      fail: () => {
+        this.setData({
+          error: "Failed to delete recipe"
+        })
+      },
+
+      complete: () => {
+        this.setData({
+          deleting: false
+        })
+      }
     })
   },
 })

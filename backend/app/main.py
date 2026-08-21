@@ -187,3 +187,19 @@ def update_recipe(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Recipe not found",
     )
+
+
+@app.delete(
+    "/api/recipes/{recipe_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_recipe(recipe_id: str) -> None:
+    for recipe in RECIPES:
+        if recipe["id"] == recipe_id:
+            RECIPES.remove(recipe)
+            return
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Recipe not found",
+    )
