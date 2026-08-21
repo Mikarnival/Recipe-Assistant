@@ -1,0 +1,303 @@
+<view class="page">
+
+<view class="page-title">
+  Edit Recipe
+</view>
+
+<view
+  wx:if="{{loading}}"
+  class="status-message"
+>
+  Loading...
+</view>
+
+<view
+  wx:elif="{{error && !title}}"
+  class="error-message"
+>
+  {{error}}
+</view>
+
+<view wx:else>
+
+  <view
+    wx:if="{{error}}"
+    class="error-message"
+  >
+    {{error}}
+  </view>
+
+
+  <!-- Basic Information -->
+  <view class="form-section">
+
+    <view class="section-title">
+      Basic Information
+    </view>
+
+    <view class="form-field">
+
+      <view class="field-label">
+        Title
+      </view>
+
+      <input
+        class="text-input"
+        placeholder="Recipe title"
+        value="{{title}}"
+        bindinput="onTitleInput"
+      />
+
+    </view>
+
+    <view class="form-field">
+
+      <view class="field-label">
+        Category
+      </view>
+
+      <picker
+        mode="selector"
+        range="{{categories}}"
+        value="{{selectedCategoryIndex}}"
+        bindchange="onCategoryChange"
+      >
+        <view class="picker-input {{category ? '' : 'placeholder'}}">
+          {{category || 'Select a category'}}
+        </view>
+      </picker>
+
+    </view>
+
+    <view class="form-field">
+
+      <view class="field-label">
+        Servings
+      </view>
+
+      <input
+        class="text-input"
+        type="number"
+        value="{{servings}}"
+        bindinput="onServingsInput"
+      />
+
+    </view>
+
+  </view>
+
+
+  <!-- Ingredients -->
+  <view class="form-section">
+
+    <view class="section-header">
+
+      <view class="section-title">
+        Ingredients
+      </view>
+
+      <view
+        class="add-button"
+        bindtap="addIngredient"
+      >
+        + Add
+      </view>
+
+    </view>
+
+    <view
+      class="ingredient-card"
+      wx:for="{{ingredients}}"
+      wx:key="index"
+      wx:for-item="ingredient"
+      wx:for-index="index"
+    >
+
+      <view class="item-header">
+
+        <view class="item-title">
+          Ingredient {{index + 1}}
+        </view>
+
+        <view
+          wx:if="{{ingredients.length > 1}}"
+          class="remove-button"
+          data-index="{{index}}"
+          bindtap="removeIngredient"
+        >
+          Remove
+        </view>
+
+      </view>
+
+      <input
+        class="text-input"
+        placeholder="Ingredient name"
+        value="{{ingredient.name}}"
+        data-index="{{index}}"
+        bindinput="onIngredientNameInput"
+      />
+
+      <view class="ingredient-row">
+
+        <input
+          class="small-input"
+          type="digit"
+          placeholder="Quantity"
+          value="{{ingredient.quantity}}"
+          data-index="{{index}}"
+          bindinput="onIngredientQuantityInput"
+        />
+
+        <picker
+          class="unit-picker"
+          mode="selector"
+          range="{{units}}"
+          value="{{ingredient.unitIndex}}"
+          data-index="{{index}}"
+          bindchange="onIngredientUnitChange"
+        >
+          <view class="small-picker-input {{ingredient.unit ? '' : 'placeholder'}}">
+            {{ingredient.unit || 'Unit'}}
+          </view>
+        </picker>
+
+      </view>
+
+    </view>
+
+  </view>
+
+
+  <!-- Preparation Tasks -->
+  <view class="form-section">
+
+    <view class="section-header">
+
+      <view class="section-title">
+        Preparation Tasks
+      </view>
+
+      <view
+        class="add-button"
+        bindtap="addPreparationTask"
+      >
+        + Add
+      </view>
+
+    </view>
+
+    <view
+      class="preparation-item"
+      wx:for="{{preparationTasks}}"
+      wx:key="index"
+      wx:for-item="task"
+      wx:for-index="index"
+    >
+
+      <input
+        class="task-input"
+        placeholder="Preparation task"
+        value="{{task}}"
+        data-index="{{index}}"
+        bindinput="onPreparationTaskInput"
+      />
+
+      <view
+        class="small-remove-button"
+        data-index="{{index}}"
+        bindtap="removePreparationTask"
+      >
+        ×
+      </view>
+
+    </view>
+
+    <view class="helper-text">
+      Preparation tasks are optional.
+    </view>
+
+  </view>
+
+
+  <!-- Cooking Steps -->
+  <view class="form-section">
+
+    <view class="section-header">
+
+      <view class="section-title">
+        Cooking Steps
+      </view>
+
+      <view
+        class="add-button"
+        bindtap="addStep"
+      >
+        + Add
+      </view>
+
+    </view>
+
+    <view
+      class="step-card"
+      wx:for="{{steps}}"
+      wx:key="index"
+      wx:for-item="step"
+      wx:for-index="index"
+    >
+
+      <view class="item-header">
+
+        <view class="item-title">
+          Step {{index + 1}}
+        </view>
+
+        <view
+          wx:if="{{steps.length > 1}}"
+          class="remove-button"
+          data-index="{{index}}"
+          bindtap="removeStep"
+        >
+          Remove
+        </view>
+
+      </view>
+
+      <textarea
+        class="step-input"
+        placeholder="Describe this cooking step"
+        value="{{step.instruction}}"
+        data-index="{{index}}"
+        bindinput="onStepInstructionInput"
+        auto-height
+      />
+
+    </view>
+
+  </view>
+
+
+  <view class="action-row">
+
+    <button
+      class="cancel-button"
+      bindtap="onCancel"
+      disabled="{{submitting}}"
+    >
+      Cancel
+    </button>
+
+    <button
+      class="save-button"
+      bindtap="onSave"
+      loading="{{submitting}}"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? 'Saving...' : 'Save Changes'}}
+    </button>
+
+  </view>
+
+</view>
+
+</view>

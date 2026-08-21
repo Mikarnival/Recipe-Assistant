@@ -2,6 +2,7 @@
   "pages": [
     "pages/recipes/recipes",
     "pages/recipe-detail/recipe-detail",
-    "pages/recipe-create/recipe-create"
+    "pages/recipe-create/recipe-create",
+    "pages/recipe-edit/recipe-edit"
   ]
 }

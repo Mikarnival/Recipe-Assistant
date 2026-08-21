@@ -141,7 +141,9 @@ def create_recipe(recipe_create: RecipeCreate) -> dict:
         ],
         "preparation_tasks": recipe_create.preparation_tasks,
         "steps": [
-            step.model_dump()
+            {
+                "instruction": step.instruction
+            }
             for step in recipe_create.steps
         ],
     }
@@ -151,3 +153,37 @@ def create_recipe(recipe_create: RecipeCreate) -> dict:
     return recipe
 
 
+@app.put(
+    "/api/recipes/{recipe_id}",
+    response_model=RecipeDetail,
+)
+def update_recipe(
+    recipe_id: str,
+    recipe_update: RecipeCreate,
+) -> dict:
+    for recipe in RECIPES:
+        if recipe["id"] == recipe_id:
+            recipe["title"] = recipe_update.title
+            recipe["category"] = recipe_update.category
+            recipe["servings"] = recipe_update.servings
+
+            recipe["ingredients"] = [
+                ingredient.model_dump()
+                for ingredient in recipe_update.ingredients
+            ]
+
+            recipe["preparation_tasks"] = (
+                recipe_update.preparation_tasks
+            )
+
+            recipe["steps"] = [
+                step.model_dump()
+                for step in recipe_update.steps
+            ]
+
+            return recipe
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Recipe not found",
+    )
