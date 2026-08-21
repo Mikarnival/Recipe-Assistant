@@ -1,66 +1,48 @@
 <view class="page">
-  <view class="page-title">My Recipes</view>
+  <view class="page-header">
+
+    <view class="page-title">
+      My Recipes
+    </view>
+
+    <view class="create-button" bindtap="onCreateRecipeTap">
+      + New Recipe
+    </view>
+
+  </view>
 
   <view class="search-bar">
     <text class="search-icon">🔍</text>
-    <input
-      class="search-input"
-      placeholder="Search recipes"
-      value="{{searchTerm}}"
-      bindinput="onSearchInput"
-    />
+    <input class="search-input" placeholder="Search recipes" value="{{searchTerm}}" bindinput="onSearchInput" />
   </view>
 
   <view class="controls">
     <view class="favorite-filter-section">
-      <view
-        class="control-option {{favoriteOnly ? 'active' : ''}}"
-        bindtap="onFavoriteFilterChange"
-      >
+      <view class="control-option {{favoriteOnly ? 'active' : ''}}" bindtap="onFavoriteFilterChange">
         ♥ Favorites
       </view>
     </view>
 
     <view class="filter-section">
-      <view
-        class="control-option {{selectedCategory === '' ? 'active' : ''}}"
-        data-category=""
-        bindtap="onCategoryChange"
-      >
+      <view class="control-option {{selectedCategory === '' ? 'active' : ''}}" data-category="" bindtap="onCategoryChange">
         All
       </view>
 
-      <view
-        class="control-option {{selectedCategory === 'Chinese' ? 'active' : ''}}"
-        data-category="Chinese"
-        bindtap="onCategoryChange"
-      >
+      <view class="control-option {{selectedCategory === 'Chinese' ? 'active' : ''}}" data-category="Chinese" bindtap="onCategoryChange">
         Chinese
       </view>
 
-      <view
-        class="control-option {{selectedCategory === 'Noodles' ? 'active' : ''}}"
-        data-category="Noodles"
-        bindtap="onCategoryChange"
-      >
+      <view class="control-option {{selectedCategory === 'Noodles' ? 'active' : ''}}" data-category="Noodles" bindtap="onCategoryChange">
         Noodles
       </view>
     </view>
 
     <view class="sort-section">
-      <view
-        class="control-option {{sortOption === 'title_asc' ? 'active' : ''}}"
-        data-sort="title_asc"
-        bindtap="onSortChange"
-      >
+      <view class="control-option {{sortOption === 'title_asc' ? 'active' : ''}}" data-sort="title_asc" bindtap="onSortChange">
         A–Z
       </view>
 
-      <view
-        class="control-option {{sortOption === 'title_desc' ? 'active' : ''}}"
-        data-sort="title_desc"
-        bindtap="onSortChange"
-      >
+      <view class="control-option {{sortOption === 'title_desc' ? 'active' : ''}}" data-sort="title_desc" bindtap="onSortChange">
         Z–A
       </view>
     </view>
@@ -78,24 +60,13 @@
     No recipes found.
   </view>
 
-  <view
-    class="recipe-card"
-    wx:for="{{recipes}}"
-    wx:key="id"
-    bindtap="onRecipeTap"
-    data-recipe-id="{{item.id}}"
-  >
+  <view class="recipe-card" wx:for="{{recipes}}" wx:key="id" bindtap="onRecipeTap" data-recipe-id="{{item.id}}">
     <view class="recipe-header">
       <view class="recipe-title">
         {{item.title}}
       </view>
 
-      <view
-        class="favorite-button"
-        catchtap="onFavoriteTap"
-        data-recipe-id="{{item.id}}"
-        data-is-favorite="{{item.is_favorite}}"
-      >
+      <view class="favorite-button" catchtap="onFavoriteTap" data-recipe-id="{{item.id}}" data-is-favorite="{{item.is_favorite}}">
         {{item.is_favorite ? '♥' : '♡'}}
       </view>
     </view>

@@ -1,7 +1,12 @@
 from fastapi import FastAPI, HTTPException, status
 
 from app.data import RECIPES
-from app.models import FavoriteUpdate, RecipeDetail, RecipeSummary
+from app.models import (
+    FavoriteUpdate,
+    RecipeCreate,
+    RecipeDetail,
+    RecipeSummary,
+)
 
 
 app = FastAPI(
@@ -104,4 +109,45 @@ def update_recipe_favorite(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Recipe not found",
     )
+
+
+def generate_recipe_id() -> str:
+    recipe_numbers = [
+        int(recipe["id"].split("-")[1])
+        for recipe in RECIPES
+        if recipe["id"].startswith("recipe-")
+    ]
+
+    next_number = max(recipe_numbers, default=0) + 1
+
+    return f"recipe-{next_number:03d}"
+
+
+@app.post(
+    "/api/recipes",
+    response_model=RecipeDetail,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_recipe(recipe_create: RecipeCreate) -> dict:
+    recipe = {
+        "id": generate_recipe_id(),
+        "title": recipe_create.title,
+        "category": recipe_create.category,
+        "servings": recipe_create.servings,
+        "is_favorite": False,
+        "ingredients": [
+            ingredient.model_dump()
+            for ingredient in recipe_create.ingredients
+        ],
+        "preparation_tasks": recipe_create.preparation_tasks,
+        "steps": [
+            step.model_dump()
+            for step in recipe_create.steps
+        ],
+    }
+
+    RECIPES.append(recipe)
+
+    return recipe
+
 

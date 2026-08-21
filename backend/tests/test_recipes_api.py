@@ -1,10 +1,56 @@
+from copy import deepcopy
+
 from fastapi.testclient import TestClient
 import pytest
 
+from app import main
+from app.data import RECIPES
 from app.main import app
 
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_recipes():
+    original_recipes = deepcopy(RECIPES)
+
+    yield
+
+    RECIPES.clear()
+    RECIPES.extend(original_recipes)
+    main.RECIPES = RECIPES
+
+
+def valid_recipe_payload() -> dict:
+    return {
+        "title": "Chicken Fried Rice",
+        "category": "Chinese",
+        "servings": 2,
+        "ingredients": [
+            {
+                "name": "Rice",
+                "quantity": 300,
+                "unit": "g",
+            },
+            {
+                "name": "Chicken",
+                "quantity": 200,
+                "unit": "g",
+            },
+        ],
+        "preparation_tasks": [
+            "Cut the chicken into small pieces.",
+        ],
+        "steps": [
+            {
+                "instruction": "Cook the chicken."
+            },
+            {
+                "instruction": "Add the rice and stir-fry."
+            },
+        ],
+    }
 
 
 def test_get_recipes_returns_200() -> None:
@@ -444,3 +490,153 @@ def test_search_category_favorite_and_sort_recipes() -> None:
     assert len(data) == 1
     assert data[0]["id"] == "recipe-002"
     assert data[0]["is_favorite"] is True
+
+
+def test_create_recipe_returns_201() -> None:
+    response = client.post(
+        "/api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    assert response.status_code == 201
+
+
+def test_create_recipe_generates_recipe_id() -> None:
+    response = client.post(
+        "/api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    data = response.json()
+
+    assert data["id"] == "recipe-003"
+
+
+def test_create_recipe_is_not_favorite_by_default() -> None:
+    response = client.post(
+        "api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    assert response.json()["is_favorite"] is False
+
+
+def test_create_recipe_returns_created_recipe() -> None:
+    response = client.post(
+        "/api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    data = response.json()
+
+    assert data["title"] == "Chicken Fried Rice"
+    assert data["category"] == "Chinese"
+    assert data["servings"] == 2
+    assert len(data["ingredients"]) == 2
+    assert len(data["steps"]) == 2
+
+
+def test_created_recipe_appears_in_recipe_list() -> None:
+    create_response = client.post(
+        "/api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    recipe_id = create_response.json()["id"]
+
+    response = client.get("/api/recipes")
+
+    data = response.json()
+
+    recipe_ids = [
+        recipe["id"]
+        for recipe in data
+    ]
+
+    assert recipe_id in recipe_ids
+
+
+def test_created_recipe_can_be_retrieved_by_id() -> None:
+    create_response = client.post(
+        "/api/recipes",
+        json=valid_recipe_payload(),
+    )
+
+    recipe_id = create_response.json()["id"]
+
+    response = client.get(
+        f"/api/recipes/{recipe_id}"
+    )
+
+    assert response.status_code == 200
+    assert response.json()["title"] == "Chicken Fried Rice"
+
+
+def test_create_recipe_rejects_missing_title() -> None:
+    payload = valid_recipe_payload()
+    del payload["title"]
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_recipe_rejects_empty_title() -> None:
+    payload = valid_recipe_payload()
+    payload["title"] = ""
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "invalid_servings",
+    [
+        0,
+        -1,
+    ],
+)
+def test_create_recipe_rejects_invalid_servings(
+    invalid_servings: int,
+) -> None:
+    payload = valid_recipe_payload()
+    payload["servings"] = invalid_servings
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_recipe_rejects_empty_ingredients() -> None:
+    payload = valid_recipe_payload()
+    payload["ingredients"][0]["quantity"] = 0
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_recipe_allows_missing_preparation_tasks() -> None:
+    payload = valid_recipe_payload()
+    del payload["preparation_tasks"]
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 201
+    assert response.json()["preparation_tasks"] == []
