@@ -32,8 +32,16 @@
 
       </view>
 
-      <view class="edit-button" bindtap="onEditRecipeTap">
-        Edit
+      <view class="recipe-actions">
+
+        <view class="edit-button" bindtap="onEditRecipeTap">
+          Edit
+        </view>
+
+        <view class="delete-button {{deleting ? 'disabled' : ''}}" bindtap="onDeleteRecipeTap">
+          {{deleting ? 'Deleting...' : 'Delete'}}
+        </view>
+
       </view>
 
     </view>

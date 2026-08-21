@@ -763,27 +763,6 @@ def test_update_recipe_rejects_invalid_servings(
     assert response.status_code == 422
 
 
-@pytest.mark.parametrize(
-    "invalid_servings",
-    [
-        0,
-        -1,
-    ],
-)
-def test_update_recipe_rejects_invalid_servings(
-    invalid_servings: int,
-) -> None:
-    payload = valid_recipe_payload()
-    payload["servings"] = invalid_servings
-
-    response = client.put(
-        "/api/recipes/recipe-001",
-        json=payload,
-    )
-
-    assert response.status_code == 422
-
-
 def test_update_recipe_rejects_empty_ingredients() -> None:
     payload = valid_recipe_payload()
     payload["ingredients"] = []
@@ -806,5 +785,58 @@ def test_update_recipe_rejects_empty_steps() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_delete_recipe_returns_204() -> None:
+    response = client.delete(
+        "/api/recipes/recipe-001"
+    )
+
+    assert response.status_code == 204
+
+
+def test_deleted_recipe_is_removed_from_recipe_list() -> None:
+    delete_response = client.delete(
+        "/api/recipes/recipe-001"
+    )
+
+    assert delete_response.status_code == 204
+
+    response = client.get("/api/recipes")
+
+    recipe_ids = [
+        recipe["id"]
+        for recipe in response.json()
+    ]
+
+    assert "recipe-001" not in recipe_ids
+
+
+def test_deleted_recipe_can_no_longer_be_retrieved() -> None:
+    delete_response = client.delete(
+        "/api/recipes/recipe-001"
+    )
+
+    assert delete_response.status_code == 204
+
+    response = client.get(
+        "/api/recipes/recipe-001"
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Recipe not found"
+    }
+
+
+def test_delete_unknown_recipe_returns_404() -> None:
+    response = client.delete(
+        "/api/recipes/recipe-999"
+    )
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Recipe not found"
+    }
 
 
