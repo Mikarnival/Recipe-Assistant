@@ -139,3 +139,12 @@
 .delete-button.disabled {
   opacity: 0.5;
 }
+
+.start-cooking-button {
+  text-align: center;
+  padding: 12rpx 22rpx;
+  background-color: #333333;
+  border-radius: 24rpx;
+  color: #ffffff;
+  font-size: 24rpx;
+}

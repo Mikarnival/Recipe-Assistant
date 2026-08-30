@@ -177,4 +177,10 @@ Page({
       }
     })
   },
+
+  onStartCookingTap() {
+    wx.navigateTo({
+      url: `/pages/cooking/cooking?id=${this.data.recipeId}`,
+    })
+  },
 })
