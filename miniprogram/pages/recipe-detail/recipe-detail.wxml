@@ -44,6 +44,10 @@
 
       </view>
 
+      <view class="start-cooking-button" bindtap="onStartCookingTap">
+        Start Cooking
+      </view>
+
     </view>
 
 
