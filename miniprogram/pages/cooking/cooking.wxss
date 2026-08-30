@@ -1,0 +1,129 @@
+.page {
+  min-height: 100vh;
+  padding: 32rpx;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+}
+
+.cooking-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.recipe-title {
+  flex: 1;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #222222;
+}
+
+.exit-button {
+  padding: 12rpx 22rpx;
+  border: 2rpx solid #666666;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  color: #555555;
+}
+
+.step-progress {
+  margin-top: 48rpx;
+  margin-bottom: 16rpx;
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.current-step {
+  min-height: 180rpx;
+  padding: 32rpx;
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+  border-radius: 16rpx;
+
+  font-size: 36rpx;
+  line-height: 1.6;
+  color: #222222;
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+
+  margin-top: 32rpx;
+}
+
+.navigation-button {
+  flex: 1;
+
+  padding: 20rpx 24rpx;
+
+  background-color: #333333;
+  border-radius: 16rpx;
+
+  text-align: center;
+  font-size: 28rpx;
+  color: #ffffff;
+}
+
+.navigation-button.disabled {
+  opacity: 0.35;
+}
+
+.ingredients-toggle {
+  margin-top: 40rpx;
+  padding: 20rpx;
+
+  background-color: #ffffff;
+  border-radius: 16rpx;
+
+  text-align: center;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.ingredients-section {
+  margin-top: 20rpx;
+  padding: 24rpx;
+
+  background-color: #ffffff;
+  border-radius: 16rpx;
+}
+
+.section-title {
+  margin-bottom: 16rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.ingredient-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 12rpx;
+
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.ingredient-name {
+  color: #222222;
+}
+
+.ingredient-amount {
+  color: #666666;
+}
+
+.status-message {
+  padding: 64rpx 32rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.error-message {
+  color: #d93025;
+}

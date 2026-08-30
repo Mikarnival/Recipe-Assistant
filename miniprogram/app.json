@@ -3,6 +3,7 @@
     "pages/recipes/recipes",
     "pages/recipe-detail/recipe-detail",
     "pages/recipe-create/recipe-create",
-    "pages/recipe-edit/recipe-edit"
+    "pages/recipe-edit/recipe-edit",
+    "pages/cooking/cooking"
   ]
 }
