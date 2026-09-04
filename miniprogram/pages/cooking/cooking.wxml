@@ -1,110 +1,97 @@
 <view class="page">
 
-<!-- Loading -->
-<view
-  class="status-message"
-  wx:if="{{loading}}"
->
-  Loading...
-</view>
-
-<!-- Error -->
-<view
-  class="status-message error-message"
-  wx:elif="{{error}}"
->
-  {{error}}
-</view>
-
-<!-- Cooking Mode -->
-<view wx:elif="{{recipe}}">
-
-  <!-- Header -->
-  <view class="cooking-header">
-
-    <view class="recipe-title">
-      {{recipe.title}}
-    </view>
-
-    <view
-      class="exit-button"
-      bindtap="onExitCookingTap"
-    >
-      Exit
-    </view>
-
+  <!-- Loading -->
+  <view class="status-message" wx:if="{{loading}}">
+    Loading...
   </view>
 
-
-  <!-- Step progress -->
-  <view class="step-progress">
-    Step {{currentStepIndex + 1}} of {{recipe.steps.length}}
+  <!-- Error -->
+  <view class="status-message error-message" wx:elif="{{error}}">
+    {{error}}
   </view>
 
+  <!-- Cooking Mode -->
+  <view wx:elif="{{recipe}}">
 
-  <!-- Current step -->
-  <view class="current-step">
-    {{recipe.steps[currentStepIndex].instruction}}
-  </view>
+    <!-- Header -->
+    <view class="cooking-header">
 
-
-  <!-- Navigation -->
-  <view class="step-navigation">
-
-    <view
-      class="navigation-button {{currentStepIndex === 0 ? 'disabled' : ''}}"
-      bindtap="onPreviousStepTap"
-    >
-      Previous
-    </view>
-
-    <view
-      class="navigation-button {{currentStepIndex === recipe.steps.length - 1 ? 'disabled' : ''}}"
-      bindtap="onNextStepTap"
-    >
-      Next
-    </view>
-
-  </view>
-
-
-  <!-- Ingredients toggle -->
-  <view
-    class="ingredients-toggle"
-    bindtap="onToggleIngredientsTap"
-  >
-    {{showIngredients ? 'Hide Ingredients' : 'Show Ingredients'}}
-  </view>
-
-
-  <!-- Ingredients -->
-  <view
-    class="ingredients-section"
-    wx:if="{{showIngredients}}"
-  >
-
-    <view class="section-title">
-      Ingredients
-    </view>
-
-    <view
-      class="ingredient-item"
-      wx:for="{{recipe.ingredients}}"
-      wx:key="name"
-    >
-
-      <view class="ingredient-name">
-        {{item.name}}
+      <view class="recipe-title">
+        {{recipe.title}}
       </view>
 
-      <view class="ingredient-amount">
-        {{item.quantity}} {{item.unit}}
+      <view class="exit-button" bindtap="onExitCookingTap">
+        Exit
+      </view>
+
+    </view>
+
+
+    <!-- Step progress -->
+    <view class="step-progress">
+      Step {{currentStepIndex + 1}} of {{recipe.steps.length}}
+    </view>
+
+
+    <!-- Current step -->
+    <view class="current-step {{currentStepCompleted ? 'completed' : ''}}">
+
+      <view class="current-step-status" wx:if="{{currentStepCompleted}}">
+        Completed
+      </view>
+
+      <view>
+        {{recipe.steps[currentStepIndex].instruction}}
+      </view>
+
+    </view>
+
+    <!-- Complete toggle -->
+    <view class="complete-button {{currentStepCompleted ? 'completed' : ''}}" bindtap="onToggleStepCompletedTap">
+      {{currentStepCompleted ? 'Mark as Incomplete' : 'Mark as Complete'}}
+    </view>
+
+    <!-- Navigation -->
+    <view class="step-navigation">
+
+      <view class="navigation-button {{currentStepIndex === 0 ? 'disabled' : ''}}" bindtap="onPreviousStepTap">
+        Previous
+      </view>
+
+      <view class="navigation-button {{currentStepIndex === recipe.steps.length - 1 ? 'disabled' : ''}}" bindtap="onNextStepTap">
+        Next
+      </view>
+
+    </view>
+
+
+    <!-- Ingredients toggle -->
+    <view class="ingredients-toggle" bindtap="onToggleIngredientsTap">
+      {{showIngredients ? 'Hide Ingredients' : 'Show Ingredients'}}
+    </view>
+
+
+    <!-- Ingredients -->
+    <view class="ingredients-section" wx:if="{{showIngredients}}">
+
+      <view class="section-title">
+        Ingredients
+      </view>
+
+      <view class="ingredient-item" wx:for="{{recipe.ingredients}}" wx:key="name">
+
+        <view class="ingredient-name">
+          {{item.name}}
+        </view>
+
+        <view class="ingredient-amount">
+          {{item.quantity}} {{item.unit}}
+        </view>
+
       </view>
 
     </view>
 
   </view>
-
-</view>
 
 </view>

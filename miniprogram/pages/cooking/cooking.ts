@@ -1,4 +1,4 @@
-export {}
+export { }
 
 const API_BASE_URL = "http://127.0.0.1:8000"
 
@@ -28,6 +28,8 @@ Page({
     recipeId: "",
     recipe: null as RecipeDetail | null,
     currentStepIndex: 0,
+    completedStepIndexes: [] as number[],
+    currentStepCompleted: false,
     showIngredients: false,
     loading: false,
     error: ""
@@ -66,6 +68,8 @@ Page({
           this.setData({
             recipe: response.data as RecipeDetail,
             currentStepIndex: 0,
+            completedStepIndexes: [],
+            currentStepCompleted: false,
             error: ""
           })
 
@@ -102,14 +106,25 @@ Page({
     })
   },
 
+  updateCurrentStepCompleted(stepIndex: number) {
+    this.setData({
+      currentStepCompleted:
+        this.data.completedStepIndexes.includes(stepIndex)
+    })
+  },
+
   onPreviousStepTap() {
     if (this.data.currentStepIndex <= 0) {
       return
     }
 
+    const newStepIndex = this.data.currentStepIndex - 1
+
     this.setData({
-      currentStepIndex: this.data.currentStepIndex - 1
+      currentStepIndex: newStepIndex
     })
+
+    this.updateCurrentStepCompleted(newStepIndex)
   },
 
   onNextStepTap() {
@@ -123,8 +138,38 @@ Page({
       return
     }
 
+    const newStepIndex = this.data.currentStepIndex + 1
+
     this.setData({
-      currentStepIndex: this.data.currentStepIndex + 1
+      currentStepIndex: newStepIndex
+    })
+
+    this.updateCurrentStepCompleted(newStepIndex)
+  },
+
+  onToggleStepCompletedTap() {
+    const currentIndex = this.data.currentStepIndex
+    const completed = this.data.completedStepIndexes
+
+    if (completed.includes(currentIndex)) {
+      const updatedCompletedSteps = completed.filter(
+        index => index !== currentIndex
+      )
+
+      this.setData({
+        completedStepIndexes: updatedCompletedSteps,
+        currentStepCompleted: false
+      })
+
+      return
+    }
+
+    this.setData({
+      completedStepIndexes: [
+        ...completed,
+        currentIndex
+      ],
+      currentStepCompleted: true
     })
   },
 

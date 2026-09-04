@@ -85,9 +85,19 @@
       </view>
 
       <block wx:else>
-        <view class="preparation-item" wx:for="{{recipe.preparation_tasks}}" wx:key="*this">
-          {{item}}
+
+        <view class="preparation-item" wx:for="{{recipe.preparation_tasks}}" wx:key="index">
+
+          <view class="preparation-number">
+            {{index + 1}}
+          </view>
+
+          <view class="preparation-text">
+            {{item}}
+          </view>
+
         </view>
+
       </block>
 
     </view>

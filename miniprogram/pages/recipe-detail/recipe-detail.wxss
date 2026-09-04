@@ -68,9 +68,35 @@
 }
 
 .preparation-item {
-  margin-bottom: 8rpx;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
   font-size: 28rpx;
   line-height: 1.6;
+}
+
+.preparation-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 16rpx;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background-color: #eeeeee;
+
+  font-size: 22rpx;
+  font-weight: bold;
+  color: #555555;
+}
+
+.preparation-text {
+  flex: 1;
+  color: #222222;
 }
 
 .empty-message {

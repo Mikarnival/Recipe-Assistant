@@ -127,3 +127,32 @@
 .error-message {
   color: #d93025;
 }
+
+.current-step.completed {
+  border: 2rpx solid #4caf50;
+  background-color: #f1f8f2;
+}
+
+.current-step-status {
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #388e3c;
+}
+
+.complete-button {
+  margin-top: 20rpx;
+  padding: 18rpx 24rpx;
+
+  border: 2rpx solid #333333;
+  border-radius: 16rpx;
+
+  text-align: center;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.complete-button.completed {
+  border-color: #4caf50;
+  color: #388e3c;
+}
