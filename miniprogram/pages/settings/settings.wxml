@@ -1,0 +1,102 @@
+<view class="page">
+
+  <view class="page-title">
+    Personalization
+  </view>
+
+
+  <!-- Taste Preference -->
+  <view class="section">
+
+    <view class="section-title">
+      Taste Preference
+    </view>
+
+    <picker mode="selector" range="{{tasteOptions}}" bindchange="onTastePreferenceChange">
+
+      <view class="picker-value">
+        {{preferences.tastePreference}}
+      </view>
+
+    </picker>
+
+  </view>
+
+
+  <!-- Measurement Unit -->
+  <view class="section">
+
+    <view class="section-title">
+      Measurement Unit
+    </view>
+
+    <picker mode="selector" range="{{unitOptions}}" bindchange="onMeasurementUnitChange">
+
+      <view class="picker-value">
+        {{preferences.measurementUnit}}
+      </view>
+
+    </picker>
+
+  </view>
+
+
+  <!-- Default Servings -->
+  <view class="section">
+
+    <view class="section-title">
+      Default Servings
+    </view>
+
+    <input class="input" type="number" value="{{preferences.defaultServings}}" bindinput="onDefaultServingsInput" />
+
+  </view>
+
+
+  <!-- Spoon Profiles -->
+  <view class="section">
+
+    <view class="section-title">
+      Spoon Profiles
+    </view>
+
+    <view class="spoon-item" wx:for="{{preferences.spoonProfiles}}" wx:key="id">
+
+      <view>
+        {{item.name}} — {{item.volumeMl}} ml
+      </view>
+
+      <view class="spoon-actions">
+
+        <view class="edit-link" data-id="{{item.id}}" bindtap="onEditSpoonTap">
+          Edit
+        </view>
+
+        <view class="delete-button" data-id="{{item.id}}" bindtap="onDeleteSpoonTap">
+          Delete
+        </view>
+
+      </view>
+
+    </view>
+
+    <input class="input" placeholder="Spoon name" value="{{newSpoonName}}" bindinput="onSpoonNameInput" />
+
+    <input class="input" type="digit" placeholder="Volume in ml" value="{{newSpoonVolume}}" bindinput="onSpoonVolumeInput" />
+
+    <view class="secondary-button" bindtap="onAddSpoonTap">
+      Add Spoon
+    </view>
+
+  </view>
+
+
+  <view class="save-button" bindtap="onSaveTap">
+    Save Preferences
+  </view>
+
+  <view class="save-message" wx:if="{{saveMessage}}">
+    {{saveMessage}}
+  </view>
+
+</view>

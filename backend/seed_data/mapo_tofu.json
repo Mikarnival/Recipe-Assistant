@@ -1,0 +1,38 @@
+{
+  "id": "recipe-003",
+  "title": "Mapo Tofu",
+  "category": "Chinese",
+  "servings": 2,
+  "is_favorite": false,
+  "ingredients": [
+    {
+      "name": "Tofu",
+      "quantity": 400,
+      "unit": "g"
+    },
+    {
+      "name": "Minced beef",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "name": "Doubanjiang",
+      "quantity": 20,
+      "unit": "g"
+    }
+  ],
+  "preparation_tasks": [
+    "Cut the tofu into cubes."
+  ],
+  "steps": [
+    {
+      "instruction": "Brown the minced beef in a pan."
+    },
+    {
+      "instruction": "Add the doubanjiang and cook briefly."
+    },
+    {
+      "instruction": "Add the tofu and simmer gently."
+    }
+  ]
+}

@@ -179,4 +179,10 @@ Page({
       }
     })
   },
+  
+  onSettingsTap() {
+    wx.navigateTo({
+      url: "/pages/settings/settings"
+    })
+  },
 })
