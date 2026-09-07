@@ -1,25 +1,9 @@
-from copy import deepcopy
-
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-from app import main
-from app.data import RECIPES
-from app.main import app
-
-
-client = TestClient(app)
-
-
-@pytest.fixture(autouse=True)
-def reset_recipes():
-    original_recipes = deepcopy(RECIPES)
-
-    yield
-
-    RECIPES.clear()
-    RECIPES.extend(original_recipes)
-    main.RECIPES = RECIPES
+from app import db_models
 
 
 def valid_recipe_payload() -> dict:
@@ -53,13 +37,17 @@ def valid_recipe_payload() -> dict:
     }
 
 
-def test_get_recipes_returns_200() -> None:
+def test_get_recipes_returns_200(
+    client: TestClient,
+) -> None:
     response = client.get("/api/recipes")
 
     assert response.status_code == 200
 
 
-def test_get_recipes_returns_all_recipes() -> None:
+def test_get_recipes_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get("/api/recipes")
 
     data = response.json()
@@ -67,7 +55,9 @@ def test_get_recipes_returns_all_recipes() -> None:
     assert len(data) == 2
 
 
-def test_get_recipes_returns_expected_field_types() -> None:
+def test_get_recipes_returns_expected_field_types(
+    client: TestClient,
+) -> None:
     response = client.get("/api/recipes")
 
     data = response.json()
@@ -80,10 +70,18 @@ def test_get_recipes_returns_expected_field_types() -> None:
         assert isinstance(recipe["is_favorite"], bool)
 
 
-def test_get_recipes_returns_empty_list_when_no_recipes(monkeypatch) -> None:
-    from app import main
+def test_get_recipes_returns_empty_list_when_no_recipes(
+    client: TestClient,
+    db: Session,
+) -> None:
+    recipes = db.scalars(
+        select(db_models.Recipe)
+    ).all()
 
-    monkeypatch.setattr(main, "RECIPES", [])
+    for recipe in recipes:
+        db.delete(recipe)
+
+    db.commit()
 
     response = client.get("/api/recipes")
 
@@ -91,14 +89,22 @@ def test_get_recipes_returns_empty_list_when_no_recipes(monkeypatch) -> None:
     assert response.json() == []
 
 
-def test_get_recipe_by_id_returns_200() -> None:
-    response = client.get("/api/recipes/recipe-001")
+def test_get_recipe_by_id_returns_200(
+    client: TestClient,
+) -> None:
+    response = client.get(
+        "/api/recipes/recipe-001"
+    )
 
     assert response.status_code == 200
 
 
-def test_get_recipe_by_id_returns_expected_recipe() -> None:
-    response = client.get("/api/recipes/recipe-001")
+def test_get_recipe_by_id_returns_expected_recipe(
+    client: TestClient,
+) -> None:
+    response = client.get(
+        "/api/recipes/recipe-001"
+    )
 
     data = response.json()
 
@@ -106,8 +112,12 @@ def test_get_recipe_by_id_returns_expected_recipe() -> None:
     assert data["title"] == "Tomato and Egg Stir-Fry"
 
 
-def test_get_recipe_by_id_returns_expected_fields() -> None:
-    response = client.get("/api/recipes/recipe-001")
+def test_get_recipe_by_id_returns_expected_fields(
+    client: TestClient,
+) -> None:
+    response = client.get(
+        "/api/recipes/recipe-001"
+    )
 
     data = response.json()
 
@@ -125,19 +135,28 @@ def test_get_recipe_by_id_returns_expected_fields() -> None:
     assert set(data.keys()) == expected_fields
 
 
-def test_get_recipe_by_id_returns_404_for_unknown_recipe() -> None:
-    response = client.get("/api/recipes/unknown-recipe")
+def test_get_recipe_by_id_returns_404_for_unknown_recipe(
+    client: TestClient,
+) -> None:
+    response = client.get(
+        "/api/recipes/unknown-recipe"
+    )
 
     assert response.status_code == 404
+
     assert response.json() == {
         "detail": "Recipe not found"
     }
 
 
-def test_search_recipes_by_full_title() -> None:
+def test_search_recipes_by_full_title(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": "Beef Noodle Soup"},
+        params={
+            "q": "Beef Noodle Soup"
+        },
     )
 
     assert response.status_code == 200
@@ -149,10 +168,14 @@ def test_search_recipes_by_full_title() -> None:
     assert data[0]["title"] == "Beef Noodle Soup"
 
 
-def test_search_recipes_by_partial_title() -> None:
+def test_search_recipes_by_partial_title(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": "Noodle"},
+        params={
+            "q": "Noodle"
+        },
     )
 
     data = response.json()
@@ -161,10 +184,14 @@ def test_search_recipes_by_partial_title() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_search_recipes_is_case_insensitive() -> None:
+def test_search_recipes_is_case_insensitive(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": "beef noodle soup"},
+        params={
+            "q": "beef noodle soup"
+        },
     )
 
     data = response.json()
@@ -173,20 +200,28 @@ def test_search_recipes_is_case_insensitive() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_search_recipes_returns_empty_list_for_no_match() -> None:
+def test_search_recipes_returns_empty_list_for_no_match(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": "Pizza"},
+        params={
+            "q": "Pizza"
+        },
     )
 
     assert response.status_code == 200
     assert response.json() == []
 
 
-def test_search_recipes_with_empty_query_returns_all_recipes() -> None:
+def test_search_recipes_with_empty_query_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": ""},
+        params={
+            "q": ""
+        },
     )
 
     data = response.json()
@@ -195,10 +230,14 @@ def test_search_recipes_with_empty_query_returns_all_recipes() -> None:
     assert len(data) == 2
 
 
-def test_search_recipes_with_whitespace_query_returns_all_recipes() -> None:
+def test_search_recipes_with_whitespace_query_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"q": "   "},
+        params={
+            "q": "   "
+        },
     )
 
     data = response.json()
@@ -207,53 +246,76 @@ def test_search_recipes_with_whitespace_query_returns_all_recipes() -> None:
     assert len(data) == 2
 
 
-def test_get_recipes_returns_favorite_state() -> None:
+def test_get_recipes_returns_favorite_state(
+    client: TestClient,
+) -> None:
     response = client.get("/api/recipes")
 
     data = response.json()
 
     for recipe in data:
-        assert isinstance(recipe["is_favorite"], bool)
+        assert isinstance(
+            recipe["is_favorite"],
+            bool,
+        )
 
 
-def test_mark_recipe_as_favorite() -> None:
+def test_mark_recipe_as_favorite(
+    client: TestClient,
+) -> None:
     response = client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
 
     assert response.status_code == 200
     assert response.json()["is_favorite"] is True
 
 
-def test_remove_recipe_from_favorites() -> None:
+def test_remove_recipe_from_favorites(
+    client: TestClient,
+) -> None:
     client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
 
     response = client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": False},
+        json={
+            "is_favorite": False
+        },
     )
 
     assert response.status_code == 200
     assert response.json()["is_favorite"] is False
 
 
-def test_update_favorite_returns_404_for_unknown_recipe() -> None:
+def test_update_favorite_returns_404_for_unknown_recipe(
+    client: TestClient,
+) -> None:
     response = client.put(
         "/api/recipes/unknown-recipe/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
 
     assert response.status_code == 404
 
 
-def test_filter_recipes_by_category() -> None:
+def test_filter_recipes_by_category(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"category": "Noodles"},
+        params={
+            "category": "Noodles"
+        },
     )
 
     data = response.json()
@@ -262,10 +324,14 @@ def test_filter_recipes_by_category() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_filter_recipes_by_category_is_case_insensitive() -> None:
+def test_filter_recipes_by_category_is_case_insensitive(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"category": "noodles"},
+        params={
+            "category": "noodles"
+        },
     )
 
     data = response.json()
@@ -274,10 +340,14 @@ def test_filter_recipes_by_category_is_case_insensitive() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_filter_recipes_returns_empty_list_for_no_match() -> None:
+def test_filter_recipes_returns_empty_list_for_no_match(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"category": "Italian"},
+        params={
+            "category": "Italian"
+        },
     )
 
     assert response.status_code == 200
@@ -285,7 +355,10 @@ def test_filter_recipes_returns_empty_list_for_no_match() -> None:
 
 
 @pytest.mark.parametrize(
-    ("sort_value", "expected_titles"),
+    (
+        "sort_value",
+        "expected_titles",
+    ),
     [
         (
             "title_asc",
@@ -304,12 +377,15 @@ def test_filter_recipes_returns_empty_list_for_no_match() -> None:
     ],
 )
 def test_sort_recipes_by_title(
+    client: TestClient,
     sort_value: str,
     expected_titles: list[str],
 ) -> None:
     response = client.get(
         "/api/recipes",
-        params={"sort": sort_value},
+        params={
+            "sort": sort_value
+        },
     )
 
     data = response.json()
@@ -322,7 +398,9 @@ def test_sort_recipes_by_title(
     assert titles == expected_titles
 
 
-def test_search_and_filter_recipes() -> None:
+def test_search_and_filter_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
         params={
@@ -337,7 +415,9 @@ def test_search_and_filter_recipes() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_search_filter_and_sort_recipes() -> None:
+def test_search_filter_and_sort_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
         params={
@@ -355,22 +435,31 @@ def test_search_filter_and_sort_recipes() -> None:
     assert data[0]["id"] == "recipe-002"
 
 
-def test_sort_recipes_returns_400_for_unsupported_value() -> None:
+def test_sort_recipes_returns_400_for_unsupported_value(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"sort": "unknown"},
+        params={
+            "sort": "unknown"
+        },
     )
 
     assert response.status_code == 400
+
     assert response.json() == {
         "detail": "Unsupported sort value"
     }
 
 
-def test_sort_recipes_with_empty_value_returns_all_recipes() -> None:
+def test_sort_recipes_with_empty_value_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"sort": ""},
+        params={
+            "sort": ""
+        },
     )
 
     assert response.status_code == 200
@@ -380,10 +469,14 @@ def test_sort_recipes_with_empty_value_returns_all_recipes() -> None:
     assert len(data) == 2
 
 
-def test_sort_recipes_with_whitespace_value_returns_all_recipes() -> None:
+def test_sort_recipes_with_whitespace_value_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get(
         "/api/recipes",
-        params={"sort": "   "},
+        params={
+            "sort": "   "
+        },
     )
 
     assert response.status_code == 200
@@ -393,19 +486,28 @@ def test_sort_recipes_with_whitespace_value_returns_all_recipes() -> None:
     assert len(data) == 2
 
 
-def test_filter_favorite_recipes() -> None:
+def test_filter_favorite_recipes(
+    client: TestClient,
+) -> None:
     client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
+
     client.put(
         "/api/recipes/recipe-002/favorite",
-        json={"is_favorite": False},
+        json={
+            "is_favorite": False
+        },
     )
 
     response = client.get(
         "/api/recipes",
-        params={"favorite": True},
+        params={
+            "favorite": True
+        },
     )
 
     assert response.status_code == 200
@@ -417,19 +519,28 @@ def test_filter_favorite_recipes() -> None:
     assert data[0]["is_favorite"] is True
 
 
-def test_filter_non_favorite_recipes() -> None:
+def test_filter_non_favorite_recipes(
+    client: TestClient,
+) -> None:
     client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
+
     client.put(
         "/api/recipes/recipe-002/favorite",
-        json={"is_favorite": False},
+        json={
+            "is_favorite": False
+        },
     )
 
     response = client.get(
         "/api/recipes",
-        params={"favorite": False},
+        params={
+            "favorite": False
+        },
     )
 
     assert response.status_code == 200
@@ -441,36 +552,51 @@ def test_filter_non_favorite_recipes() -> None:
     assert data[0]["is_favorite"] is False
 
 
-def test_get_recipes_without_favorite_filter_returns_all_recipes() -> None:
+def test_get_recipes_without_favorite_filter_returns_all_recipes(
+    client: TestClient,
+) -> None:
     response = client.get("/api/recipes")
 
     assert response.status_code == 200
     assert len(response.json()) == 2
 
 
-def test_favorite_filter_returns_empty_list_when_no_match() -> None:
+def test_favorite_filter_returns_empty_list_when_no_match(
+    client: TestClient,
+) -> None:
     client.put(
         "/api/recipes/recipe-001/favorite",
-        json={"is_favorite": False},
+        json={
+            "is_favorite": False
+        },
     )
+
     client.put(
         "/api/recipes/recipe-002/favorite",
-        json={"is_favorite": False},
+        json={
+            "is_favorite": False
+        },
     )
 
     response = client.get(
         "/api/recipes",
-        params={"favorite": True},
+        params={
+            "favorite": True
+        },
     )
 
     assert response.status_code == 200
     assert response.json() == []
 
 
-def test_search_category_favorite_and_sort_recipes() -> None:
+def test_search_category_favorite_and_sort_recipes(
+    client: TestClient,
+) -> None:
     client.put(
         "/api/recipes/recipe-002/favorite",
-        json={"is_favorite": True},
+        json={
+            "is_favorite": True
+        },
     )
 
     response = client.get(
@@ -492,7 +618,9 @@ def test_search_category_favorite_and_sort_recipes() -> None:
     assert data[0]["is_favorite"] is True
 
 
-def test_create_recipe_returns_201() -> None:
+def test_create_recipe_returns_201(
+    client: TestClient,
+) -> None:
     response = client.post(
         "/api/recipes",
         json=valid_recipe_payload(),
@@ -501,7 +629,9 @@ def test_create_recipe_returns_201() -> None:
     assert response.status_code == 201
 
 
-def test_create_recipe_generates_recipe_id() -> None:
+def test_create_recipe_generates_recipe_id(
+    client: TestClient,
+) -> None:
     response = client.post(
         "/api/recipes",
         json=valid_recipe_payload(),
@@ -512,16 +642,20 @@ def test_create_recipe_generates_recipe_id() -> None:
     assert data["id"] == "recipe-003"
 
 
-def test_create_recipe_is_not_favorite_by_default() -> None:
+def test_create_recipe_is_not_favorite_by_default(
+    client: TestClient,
+) -> None:
     response = client.post(
-        "api/recipes",
+        "/api/recipes",
         json=valid_recipe_payload(),
     )
 
     assert response.json()["is_favorite"] is False
 
 
-def test_create_recipe_returns_created_recipe() -> None:
+def test_create_recipe_returns_created_recipe(
+    client: TestClient,
+) -> None:
     response = client.post(
         "/api/recipes",
         json=valid_recipe_payload(),
@@ -536,7 +670,9 @@ def test_create_recipe_returns_created_recipe() -> None:
     assert len(data["steps"]) == 2
 
 
-def test_created_recipe_appears_in_recipe_list() -> None:
+def test_created_recipe_appears_in_recipe_list(
+    client: TestClient,
+) -> None:
     create_response = client.post(
         "/api/recipes",
         json=valid_recipe_payload(),
@@ -556,7 +692,9 @@ def test_created_recipe_appears_in_recipe_list() -> None:
     assert recipe_id in recipe_ids
 
 
-def test_created_recipe_can_be_retrieved_by_id() -> None:
+def test_created_recipe_can_be_retrieved_by_id(
+    client: TestClient,
+) -> None:
     create_response = client.post(
         "/api/recipes",
         json=valid_recipe_payload(),
@@ -569,11 +707,18 @@ def test_created_recipe_can_be_retrieved_by_id() -> None:
     )
 
     assert response.status_code == 200
-    assert response.json()["title"] == "Chicken Fried Rice"
+
+    assert (
+        response.json()["title"]
+        == "Chicken Fried Rice"
+    )
 
 
-def test_create_recipe_rejects_missing_title() -> None:
+def test_create_recipe_rejects_missing_title(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     del payload["title"]
 
     response = client.post(
@@ -584,8 +729,11 @@ def test_create_recipe_rejects_missing_title() -> None:
     assert response.status_code == 422
 
 
-def test_create_recipe_rejects_empty_title() -> None:
+def test_create_recipe_rejects_empty_title(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     payload["title"] = ""
 
     response = client.post(
@@ -604,9 +752,11 @@ def test_create_recipe_rejects_empty_title() -> None:
     ],
 )
 def test_create_recipe_rejects_invalid_servings(
+    client: TestClient,
     invalid_servings: int,
 ) -> None:
     payload = valid_recipe_payload()
+
     payload["servings"] = invalid_servings
 
     response = client.post(
@@ -617,8 +767,11 @@ def test_create_recipe_rejects_invalid_servings(
     assert response.status_code == 422
 
 
-def test_create_recipe_rejects_empty_ingredients() -> None:
+def test_create_recipe_rejects_invalid_ingredient_quantity(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     payload["ingredients"][0]["quantity"] = 0
 
     response = client.post(
@@ -629,8 +782,41 @@ def test_create_recipe_rejects_empty_ingredients() -> None:
     assert response.status_code == 422
 
 
-def test_create_recipe_allows_missing_preparation_tasks() -> None:
+def test_create_recipe_rejects_empty_ingredients(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
+    payload["ingredients"] = []
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_recipe_rejects_empty_steps(
+    client: TestClient,
+) -> None:
+    payload = valid_recipe_payload()
+
+    payload["steps"] = []
+
+    response = client.post(
+        "/api/recipes",
+        json=payload,
+    )
+
+    assert response.status_code == 422
+
+
+def test_create_recipe_allows_missing_preparation_tasks(
+    client: TestClient,
+) -> None:
+    payload = valid_recipe_payload()
+
     del payload["preparation_tasks"]
 
     response = client.post(
@@ -639,10 +825,16 @@ def test_create_recipe_allows_missing_preparation_tasks() -> None:
     )
 
     assert response.status_code == 201
-    assert response.json()["preparation_tasks"] == []
+
+    assert (
+        response.json()["preparation_tasks"]
+        == []
+    )
 
 
-def test_update_recipe_returns_200() -> None:
+def test_update_recipe_returns_200(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
 
     response = client.put(
@@ -653,7 +845,9 @@ def test_update_recipe_returns_200() -> None:
     assert response.status_code == 200
 
 
-def test_update_recipe_changes_recipe_data() -> None:
+def test_update_recipe_changes_recipe_data(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
 
     response = client.put(
@@ -670,7 +864,9 @@ def test_update_recipe_changes_recipe_data() -> None:
     assert len(data["steps"]) == 2
 
 
-def test_update_recipe_preserves_recipe_id() -> None:
+def test_update_recipe_preserves_recipe_id(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
 
     response = client.put(
@@ -681,7 +877,9 @@ def test_update_recipe_preserves_recipe_id() -> None:
     assert response.json()["id"] == "recipe-001"
 
 
-def test_update_recipe_preserves_favorite_status() -> None:
+def test_update_recipe_preserves_favorite_status(
+    client: TestClient,
+) -> None:
     favorite_response = client.put(
         "/api/recipes/recipe-001/favorite",
         json={
@@ -699,10 +897,16 @@ def test_update_recipe_preserves_favorite_status() -> None:
     )
 
     assert response.status_code == 200
-    assert response.json()["is_favorite"] is True
+
+    assert (
+        response.json()["is_favorite"]
+        is True
+    )
 
 
-def test_updated_recipe_can_be_retrieved() -> None:
+def test_updated_recipe_can_be_retrieved(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
 
     client.put(
@@ -715,23 +919,33 @@ def test_updated_recipe_can_be_retrieved() -> None:
     )
 
     assert response.status_code == 200
-    assert response.json()["title"] == "Chicken Fried Rice"
+
+    assert (
+        response.json()["title"]
+        == "Chicken Fried Rice"
+    )
 
 
-def test_update_unknown_recipe_returns_404() -> None:
+def test_update_unknown_recipe_returns_404(
+    client: TestClient,
+) -> None:
     response = client.put(
         "/api/recipes/recipe-999",
         json=valid_recipe_payload(),
     )
 
     assert response.status_code == 404
+
     assert response.json() == {
         "detail": "Recipe not found"
     }
 
 
-def test_update_recipe_rejects_empty_title() -> None:
+def test_update_recipe_rejects_empty_title(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     payload["title"] = ""
 
     response = client.put(
@@ -750,9 +964,11 @@ def test_update_recipe_rejects_empty_title() -> None:
     ],
 )
 def test_update_recipe_rejects_invalid_servings(
+    client: TestClient,
     invalid_servings: int,
 ) -> None:
     payload = valid_recipe_payload()
+
     payload["servings"] = invalid_servings
 
     response = client.put(
@@ -763,8 +979,11 @@ def test_update_recipe_rejects_invalid_servings(
     assert response.status_code == 422
 
 
-def test_update_recipe_rejects_empty_ingredients() -> None:
+def test_update_recipe_rejects_empty_ingredients(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     payload["ingredients"] = []
 
     response = client.put(
@@ -775,8 +994,11 @@ def test_update_recipe_rejects_empty_ingredients() -> None:
     assert response.status_code == 422
 
 
-def test_update_recipe_rejects_empty_steps() -> None:
+def test_update_recipe_rejects_empty_steps(
+    client: TestClient,
+) -> None:
     payload = valid_recipe_payload()
+
     payload["steps"] = []
 
     response = client.put(
@@ -787,7 +1009,9 @@ def test_update_recipe_rejects_empty_steps() -> None:
     assert response.status_code == 422
 
 
-def test_delete_recipe_returns_204() -> None:
+def test_delete_recipe_returns_204(
+    client: TestClient,
+) -> None:
     response = client.delete(
         "/api/recipes/recipe-001"
     )
@@ -795,7 +1019,9 @@ def test_delete_recipe_returns_204() -> None:
     assert response.status_code == 204
 
 
-def test_deleted_recipe_is_removed_from_recipe_list() -> None:
+def test_deleted_recipe_is_removed_from_recipe_list(
+    client: TestClient,
+) -> None:
     delete_response = client.delete(
         "/api/recipes/recipe-001"
     )
@@ -812,7 +1038,9 @@ def test_deleted_recipe_is_removed_from_recipe_list() -> None:
     assert "recipe-001" not in recipe_ids
 
 
-def test_deleted_recipe_can_no_longer_be_retrieved() -> None:
+def test_deleted_recipe_can_no_longer_be_retrieved(
+    client: TestClient,
+) -> None:
     delete_response = client.delete(
         "/api/recipes/recipe-001"
     )
@@ -824,19 +1052,57 @@ def test_deleted_recipe_can_no_longer_be_retrieved() -> None:
     )
 
     assert response.status_code == 404
+
     assert response.json() == {
         "detail": "Recipe not found"
     }
 
 
-def test_delete_unknown_recipe_returns_404() -> None:
+def test_delete_unknown_recipe_returns_404(
+    client: TestClient,
+) -> None:
     response = client.delete(
         "/api/recipes/recipe-999"
     )
 
     assert response.status_code == 404
+
     assert response.json() == {
         "detail": "Recipe not found"
     }
 
 
+def test_delete_recipe_removes_related_data(
+    client: TestClient,
+    db: Session,
+) -> None:
+    response = client.delete(
+        "/api/recipes/recipe-001"
+    )
+
+    assert response.status_code == 204
+
+    ingredients = db.scalars(
+        select(db_models.Ingredient).where(
+            db_models.Ingredient.recipe_id
+            == "recipe-001"
+        )
+    ).all()
+
+    preparation_tasks = db.scalars(
+        select(db_models.PreparationTask).where(
+            db_models.PreparationTask.recipe_id
+            == "recipe-001"
+        )
+    ).all()
+
+    cooking_steps = db.scalars(
+        select(db_models.CookingStep).where(
+            db_models.CookingStep.recipe_id
+            == "recipe-001"
+        )
+    ).all()
+
+    assert ingredients == []
+    assert preparation_tasks == []
+    assert cooking_steps == []

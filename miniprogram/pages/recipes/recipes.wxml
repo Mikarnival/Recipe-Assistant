@@ -75,4 +75,9 @@
       {{item.category}} · {{item.servings}} servings
     </view>
   </view>
+
+  <view class="settings-button" bindtap="onSettingsTap">
+  Settings
+  </view>
+
 </view>

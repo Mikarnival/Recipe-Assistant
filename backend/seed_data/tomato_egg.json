@@ -1,0 +1,50 @@
+{
+  "id": "recipe-001",
+  "title": "Tomato and Egg Stir-Fry",
+  "category": "Chinese",
+  "servings": 2,
+  "is_favorite": false,
+  "ingredients": [
+    {
+      "name": "Egg",
+      "quantity": 3,
+      "unit": "piece"
+    },
+    {
+      "name": "Tomato",
+      "quantity": 2,
+      "unit": "piece"
+    },
+    {
+      "name": "Cooking oil",
+      "quantity": 15,
+      "unit": "ml"
+    },
+    {
+      "name": "Salt",
+      "quantity": 2,
+      "unit": "g"
+    }
+  ],
+  "preparation_tasks": [
+    "Beat the eggs.",
+    "Cut the tomatoes into chunks."
+  ],
+  "steps": [
+    {
+      "instruction": "Heat the cooking oil in a pan."
+    },
+    {
+      "instruction": "Add the eggs and stir-fry until softly set."
+    },
+    {
+      "instruction": "Remove the eggs from the pan."
+    },
+    {
+      "instruction": "Add the tomatoes and cook until softened."
+    },
+    {
+      "instruction": "Return the eggs to the pan, season with salt, and mix well."
+    }
+  ]
+}

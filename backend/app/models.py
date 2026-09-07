@@ -49,3 +49,7 @@ class RecipeDetail(BaseModel):
     ingredients: list[Ingredient]
     preparation_tasks: list[str]
     steps: list[CookingStep]
+
+class RecipeImport(RecipeCreate):
+    id: NonEmptyString
+    is_favorite: bool = False

@@ -4,6 +4,7 @@
     "pages/recipe-detail/recipe-detail",
     "pages/recipe-create/recipe-create",
     "pages/recipe-edit/recipe-edit",
-    "pages/cooking/cooking"
+    "pages/cooking/cooking",
+    "pages/settings/settings"
   ]
 }

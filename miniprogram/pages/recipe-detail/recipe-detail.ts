@@ -23,10 +23,18 @@ interface RecipeDetail {
   steps: CookingStep[]
 }
 
+interface DisplayIngredient {
+  name: string
+  quantity: number
+  unit: string
+}
+
 Page({
   data: {
     recipeId: "",
     recipe: null as RecipeDetail | null,
+    displayIngredients: [] as DisplayIngredient[],
+    displayServings: 0,
     loading: false,
     deleting: false,
     error: ""
